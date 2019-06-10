@@ -1,0 +1,11 @@
+# Node
+node_modules
+npm-debug.log
+.DS_Store
+*.cpuprofile
+
+# Environment variables
+.env
+
+# Visual Studio Code
+.vscode
