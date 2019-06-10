@@ -37,7 +37,7 @@
 
 ################ Please, change this directory to your working dir.
 
-#PBS -d /home/pp12712/rafaelcompanhoni2/roteiro01/hello
+#PBS -d /home/pp12712/parallel-computing/T2/roteiro01/hello
 
 
 ################
