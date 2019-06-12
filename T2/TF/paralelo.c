@@ -40,21 +40,21 @@ int initializeMatrixes()
 
     // print both
     printf("MATRIZ 1:\n");
-    for (int row = 0; row < SIZE; row++)
+    for (i = 0; i < SIZE; i++)
     {
-        for (int columns = 0; columns < SIZE; columns++)
+        for (int j = 0; j < SIZE; j++)
         {
-            printf("%d     ", m1[row][columns]);
+            printf("%d     ", m1[i][j]);
         }
         printf("\n");
     }
 
     printf("MATRIZ 2:\n");
-    for (int row = 0; row < SIZE; row++)
+    for (i = 0; i < SIZE; i++)
     {
-        for (int columns = 0; columns < SIZE; columns++)
+        for (j = 0; j < SIZE; j++)
         {
-            printf("%d     ", m2[row][columns]);
+            printf("%d     ", m2[i][j]);
         }
         printf("\n");
     }
