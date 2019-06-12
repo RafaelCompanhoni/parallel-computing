@@ -49,7 +49,7 @@ int initializeMatrixes()
         printf("\n");
     }
 
-    printf("MATRIZ 2:\n");
+    printf("\nMATRIZ 2:\n");
     for (i = 0; i < SIZE; i++)
     {
         for (j = 0; j < SIZE; j++)
