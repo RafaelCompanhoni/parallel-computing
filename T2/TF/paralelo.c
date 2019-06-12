@@ -42,7 +42,7 @@ int initializeMatrixes()
     printf("MATRIZ 1:\n");
     for (i = 0; i < SIZE; i++)
     {
-        for (int j = 0; j < SIZE; j++)
+        for (j = 0; j < SIZE; j++)
         {
             printf("%d     ", m1[i][j]);
         }
