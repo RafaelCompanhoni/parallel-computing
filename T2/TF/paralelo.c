@@ -58,6 +58,7 @@ int multiply()
 {
     int i, j, k;
 
+    omp_set_num_threads(16); 
     #pragma omp parallel for
     for (i = 0; i < SIZE; i++)
     {
