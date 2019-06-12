@@ -6,7 +6,7 @@
 int m1[SIZE][SIZE], m2[SIZE][SIZE], mres[SIZE][SIZE];
 int l1, c1, l2, c2, lres, cres;
 
-void printMatrix(matrix)
+void printMatrix(*matrix)
 {
     int i, j;
 
@@ -55,14 +55,14 @@ int initializeMatrixes()
 
 int multiply()
 {
-    int i, j;
+    int i, j, k;
 
     for (i = 0; i < SIZE; i++)
     {
         for (j = 0; j < SIZE; j++)
         {
             mres[i][j] = 0;
-            for (k = 0; k < c1; k++)
+            for (k = 0; k < SIZE; k++)
             {
                 mres[i][j] += m1[i][k] * m2[k][j];
             }
