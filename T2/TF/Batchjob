@@ -58,7 +58,7 @@ echo ################
 
 ############# Command example, if using MPI
 
-mpirun -np 1 paralelo
+mpirun -np 4 paralelo
 
 ################
 
