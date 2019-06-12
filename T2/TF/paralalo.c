@@ -8,6 +8,7 @@ int l1, c1, l2, c2, lres, cres;
 
 int initializeMatrixes()
 {
+    int i, j;
     int k = 1;
 
     // initialize matrix m1
