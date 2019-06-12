@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi.h>
+#include <omp.h>
 
 // DADOS COMPARTILHADOS
 int m1[SIZE][SIZE], m2[SIZE][SIZE], mres[SIZE][SIZE];
@@ -57,6 +58,7 @@ int multiply()
 {
     int i, j, k;
 
+    #pragma omp parallel for
     for (i = 0; i < SIZE; i++)
     {
         for (j = 0; j < SIZE; j++)
