@@ -6,7 +6,7 @@
 int m1[SIZE][SIZE], m2[SIZE][SIZE], mres[SIZE][SIZE];
 int l1, c1, l2, c2, lres, cres;
 
-void printMatrix(int** matrix)
+void printMatrix(int matrix[SIZE][SIZE])
 {
     int i, j;
 
