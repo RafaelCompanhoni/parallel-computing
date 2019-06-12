@@ -72,17 +72,26 @@ int multiply()
 
 int main(int argc, char *argv[])
 {
+    int id, p;
+    double elapsed_time;
+
+    MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &p);
+    MPI_Comm_rank(MPI_COMM_WORLD, &id);
+
+    if (id != 0)
+    {
+        MPI_Finalize();
+        exit(0);
+    }
+
     initializeMatrixes();
 
-    printf("MATRIZ 1:\n");
-    printMatrix(m1);
-
-    printf("\nMATRIZ 2:\n");
-    printMatrix(m2);
-
+    elapsed_time = -MPI_Wtime();
     multiply();
-    printf("\nRESULT:\n");
-    printMatrix(mres);
+    elapsed_time += MPI_Wtime();
 
+    printf("%lf", elapsed_time);
+    MPI_Finalize();
     return 0;
 }
