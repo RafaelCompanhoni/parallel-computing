@@ -57,10 +57,15 @@ int initializeMatrixes()
 int multiply()
 {
     int i, j, k;
+    int th_id, nthreads;
 
-    #pragma omp parallel for private(j, k)
+    #pragma omp parallel for private(j, k, th_id, nthreads)
     for (i = 0; i < SIZE; i++)
     {
+        th_id = omp_get_thread_num();
+	    nthreads = omp_get_num_threads();
+        printf("Hello World from thread %d of %d threads.\n", th_id, nthreads);
+        
         for (j = 0; j < SIZE; j++)
         {
             mres[i][j] = 0;
