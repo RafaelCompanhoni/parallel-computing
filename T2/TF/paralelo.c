@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     printf("MATRIZ 1:\n");
     printMatrix(m1);
 
-    printf("MATRIZ 2:\n");
+    printf("\nMATRIZ 2:\n");
     printMatrix(m2);
 
     multiply();
