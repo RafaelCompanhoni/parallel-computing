@@ -173,7 +173,7 @@ main(int argc, char **argv)
 
                 // TODO - read the results and assemble the final matrix
             } else {
-                printf("NENHUM ESCRAVO DISPONIVEL\n");
+                // printf("NENHUM ESCRAVO DISPONIVEL\n");
             }
 
             // 1. get next batch of lines from 'm1'
