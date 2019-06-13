@@ -160,7 +160,7 @@ main(int argc, char **argv)
                 // get the results and flag the worker as available again
                 int partialResults[rowsToProcess][SIZE];
                 MPI_Recv(&partialResults, rowsToProcess*SIZE, MPI_INT, availableWorkerId, PARTIAL_RESULT_TAG, MPI_COMM_WORLD, &status);
-                printf("\nRESULTADO PARCIAL RECEBIDO\n");
+                printf("\nRESULTADO PARCIAL RECEBIDO DE ESCRAVO[%d]\n", status.MPI_SOURCE);
                 printMatrix(rowsToProcess, SIZE, partialResults);
                 workers[status.MPI_SOURCE].isAvailable = 1;
 
