@@ -15,39 +15,6 @@ void printMatrix(int matrix[SIZE][SIZE])
     }
 }
 
-int initializeMatrixes()
-{
-    int i, j;
-    int k = 1;
-
-    // initialize matrix m1
-    for (i = 0; i < SIZE; i++)
-    {
-        for (j = 0; j < SIZE; j++)
-        {
-            if (k % 2 == 0)
-                m1[i][j] = -k;
-            else
-                m1[i][j] = k;
-        }
-        k++;
-    }
-
-    // initialize matrix m2
-    k = 1;
-    for (j = 0; j < SIZE; j++)
-    {
-        for (i = 0; i < SIZE; i++)
-        {
-            if (k % 2 == 0)
-                m2[i][j] = -k;
-            else
-                m2[i][j] = k;
-        }
-        k++;
-    }
-}
-
 int multiply()
 {
     int i, j, k;
@@ -80,10 +47,38 @@ main(int argc, char **argv)
 
     if (my_rank == 0) // qual o meu papel: sou o mestre ou um dos escravos?
     {
-        /**************** MESTRE ****************/
+        /**************** MASTER ****************/
 
         int m1[SIZE][SIZE], m2[SIZE][SIZE], mres[SIZE][SIZE];
-        initializeMatrixes();
+        int i, j;
+        int k = 1;
+
+        // initialize matrix m1
+        for (i = 0; i < SIZE; i++)
+        {
+            for (j = 0; j < SIZE; j++)
+            {
+                if (k % 2 == 0)
+                    m1[i][j] = -k;
+                else
+                    m1[i][j] = k;
+            }
+            k++;
+        }
+
+        // initialize matrix m2
+        k = 1;
+        for (j = 0; j < SIZE; j++)
+        {
+            for (i = 0; i < SIZE; i++)
+            {
+                if (k % 2 == 0)
+                    m2[i][j] = -k;
+                else
+                    m2[i][j] = k;
+            }
+            k++;
+        }
 
         printf("\nMatriz 1");
         printMatrix(m1);
@@ -105,7 +100,7 @@ main(int argc, char **argv)
     }
     else
     {
-        /**************** ESCRAVO ****************/
+        /**************** SLAVE ****************/
 
         // recebo mensagem
         // MPI_Recv(&message, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
