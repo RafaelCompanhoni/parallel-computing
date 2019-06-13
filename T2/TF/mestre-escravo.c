@@ -172,6 +172,9 @@ main(int argc, char **argv)
                         mres[partialResultRow + offset][partialResultColumn] = partialResults[partialResultRow][partialResultColumn];
                     }
                 }
+
+                printf("\nCURRENT FINAL RESULT\n");
+                printMatrix(SIZE, SIZE, mres);
             }
         } while (currentRowToProcess < SIZE);
 
