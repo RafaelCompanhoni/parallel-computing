@@ -143,7 +143,7 @@ main(int argc, char **argv)
         int processedRows = 0;
         do {
             // find an available worker
-            int availableWorker = -1;
+            int availableWorker = 0;
             for (workerId=1; workerId < workers_total; workerId++) {
                 if (workers[workerId].isAvailable) {
                     workers[workerId].isAvailable = 0;
