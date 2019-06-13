@@ -169,7 +169,7 @@ main(int argc, char **argv)
                 int partialResultRow, partialResultColumn;
                 for (partialResultRow = 0; partialResultRow < rowsToProcess; partialResultRow++) {
                     for (partialResultColumn = 0; partialResultColumn < SIZE; partialResultColumn++) {
-                        mres[partialResultRow + offset][partialResultColumn] = partialResults[partialResultRow][resultColumn];
+                        mres[partialResultRow + offset][partialResultColumn] = partialResults[partialResultRow][partialResultColumn];
                     }
                 }
             }
