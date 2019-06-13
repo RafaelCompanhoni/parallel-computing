@@ -1,10 +1,6 @@
 #include <stdio.h>
 #include "mpi.h"
 
-// HOST_TAG = 1
-// BASE_MATRIX_TAG = 2
-// PARTIAL_RESULT = 3
-
 struct WorkerInfo 
 { 
    int workerId;
@@ -26,32 +22,13 @@ void printMatrix(int rows, int columns, int matrix[rows][columns])
     }
 }
 
-/*
-int multiply()
-{
-    int i, j, k;
-
-    #pragma omp parallel for private(j, k) num_threads(16)
-    for (i = 0; i < SIZE; i++)
-    {
-        for (j = 0; j < SIZE; j++)
-        {
-            mres[i][j] = 0;
-            for (k = 0; k < SIZE; k++)
-            {
-                mres[i][j] += m1[i][k] * m2[k][j];
-            }
-        }
-    }
-}
-*/
-
 main(int argc, char **argv)
 {
     int const HOST_DISCOVERY_TAG = 1;
     int const BASE_MATRIX_TAG = 2;
     int const PARTIAL_MATRIX_TAG = 3;
     int const WORKER_CAPACITY_TAG = 4;
+    int const PARTIAL_RESULT_TAG = 5;
 
     int my_rank;                    // process identifier
     int workers_total;              // total amount of workers
@@ -72,7 +49,6 @@ main(int argc, char **argv)
     if (my_rank == 0)
     {
         /**************** MASTER ****************/
-        printf("\nMESTRE em %s\n", hostname);
 
         int m1[SIZE][SIZE], mres[SIZE][SIZE];   
         int i, j, workerId;
@@ -145,14 +121,7 @@ main(int argc, char **argv)
         for (workerId=1; workerId < workers_total; workerId++)
         {
             printf("\nEnviando matriz base para ESCRAVO[%d]", workerId);
-            MPI_Send(
-                &m2,                
-                SIZE*SIZE,          
-                MPI_INT,            
-                workerId,           
-                BASE_MATRIX_TAG,    
-                MPI_COMM_WORLD      
-            ); 
+            MPI_Send(&m2, SIZE*SIZE, MPI_INT, workerId, BASE_MATRIX_TAG, MPI_COMM_WORLD); 
         }
 
         // TODO - send lines and process results
@@ -186,16 +155,15 @@ main(int argc, char **argv)
                 // send batch to the worker
                 MPI_Send(&batchToProcess, rowsToProcess*SIZE, MPI_INT, availableWorkerId, PARTIAL_MATRIX_TAG, MPI_COMM_WORLD); 
 
-                // TODO - read the results and assemble the final matrix
-                // MPI_Recv(
-                //     &message,           // buffer onde será colocada a mensagem
-                //     1,                  // uma unidade do dado a ser recebido 
-                //     MPI_INT,            // dado do tipo inteiro 
-                //     MPI_ANY_SOURCE,     // ler mensagem de qualquer emissor 
-                //     3,                  // PARTIAL_RESULT 
-                //     MPI_COMM_WORLD,     // comunicador padrão 
-                //     &status             // estrtura com informações sobre a mensagem recebida 
-                // );           
+                // TODO - get the results
+                int partialResults[rowsToProcess][SIZE];
+                MPI_Recv(&partialResults, rowsToProcess*SIZE, MPI_INT, 0, PARTIAL_RESULT_TAG, MPI_COMM_WORLD, &status);
+                printf(status);
+                printf("\nRESULTADO PARCIAL RECEBIDO");
+                printMatrix(rowsToProcess, SIZE, partialResults);
+                workers[status.MPI_SOURCE].isAvailable = 1;
+
+                // TODO - update final matrix           
             } else {
                 printf("NENHUM ESCRAVO DISPONIVEL\n");
                 currentRowToProcess++;
@@ -205,7 +173,7 @@ main(int argc, char **argv)
     else
     {
         /**************** WORKER ****************/
-        printf("\nESCRAVO[%d] em %s\n", my_rank, hostname);
+
         int currentCapacity;
 
         // inform the master its current host
@@ -223,7 +191,7 @@ main(int argc, char **argv)
         printf("\n*** BATCH RECEIVED FROM MASTER");
         printMatrix(currentCapacity, SIZE, partialMatrix);
         
-        // TODO - multiply
+        // multiply partialMatrix with base matrix 'm2'
         int i, j, k;
         int partialResult[currentCapacity][SIZE];
         #pragma omp parallel for private(j, k) num_threads(currentCapacity)
@@ -240,8 +208,7 @@ main(int argc, char **argv)
         }
 
         // TODO - send results back to the master
-        printf("\n*** PARTIAL RESULT");
-        printMatrix(currentCapacity, SIZE, partialResult);
+        MPI_Send(&partialResult, currentCapacity*SIZE, MPI_INT, 0, PARTIAL_RESULT_TAG, MPI_COMM_WORLD);
     }
 
     MPI_Finalize();
