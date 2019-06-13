@@ -73,7 +73,7 @@ main(int argc, char **argv)
                 processor_buffer_length,        
                 MPI_CHAR,            
                 worker,              
-                1,    
+                1, // HOST_DISCOVERY
                 MPI_COMM_WORLD,
                 &status
             );
@@ -171,11 +171,9 @@ main(int argc, char **argv)
             MPI_COMM_WORLD,     // communicator (handle)
             &status             // status object (Status)
         );
-        printMatrix(m2);
 
         // receive partial matrix 
         int partial[SIZE][SIZE];
-
 
         // retorno resultado para o mestre
         // MPI_Send(&message, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
