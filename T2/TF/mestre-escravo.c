@@ -153,7 +153,7 @@ main(int argc, char **argv)
             }
 
             if (availableWorker) {
-                printf("ESCRAVO[%d] DISPONIVEL %d\n", availableWorker);
+                printf("ESCRAVO[%d] DISPONIVEL\n", availableWorker);
             } else {
                 printf("NENHUM ESCRAVO DISPONIVEL\n");
             }
