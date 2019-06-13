@@ -117,8 +117,8 @@ main(int argc, char **argv)
         printf("\nESCRAVO[%d]\n", my_rank);
 
         // receive base matrix
-        MPI_Recv(&m2, SIZE*SIZE, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
-        printMatrix(m2);
+        // MPI_Recv(&m2, SIZE*SIZE, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
+        // printMatrix(m2);
 
         // retorno resultado para o mestre
         // MPI_Send(&message, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
