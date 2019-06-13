@@ -84,7 +84,7 @@ main(int argc, char **argv)
         }
 
         // send second matrix to slaves
-        for (dest=1; dest<=proc_n; dest++)
+        for (dest=1; dest < proc_n; dest++)
         {
             printf("\nSending to %d\n", dest);
             MPI_Send(
