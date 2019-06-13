@@ -8,7 +8,7 @@
 struct workerInfo 
 { 
    char hostname[MPI_MAX_PROCESSOR_NAME];
-   bool isAvailable;
+   int isAvailable;
 }; 
 
 void printMatrix(int matrix[SIZE][SIZE])
