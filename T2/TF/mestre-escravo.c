@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include "mpi.h"
 
-#define HOST_TAG 1;
-#define BASE_MATRIX_TAG 2;
+// HOST_TAG = 1
+// BASE_MATRIX_TAG = 2
 
 void printMatrix(int matrix[SIZE][SIZE])
 {
@@ -73,7 +73,7 @@ main(int argc, char **argv)
                 processor_buffer_length,        
                 MPI_CHAR,            
                 worker,              
-                HOST_TAG,    
+                1,    
                 MPI_COMM_WORLD,
                 &status
             );
@@ -123,7 +123,7 @@ main(int argc, char **argv)
                 SIZE*SIZE,          // number of elements in send buffer (nonnegative integer)
                 MPI_INT,            // datatype of each send buffer element (handle)
                 worker,             // rank of destination (integer)
-                BASE_MATRIX_TAG,    // message tag (integer)
+                2,                  // message tag (integer)
                 MPI_COMM_WORLD      // communicator (handle)
             ); 
         }
@@ -157,7 +157,7 @@ main(int argc, char **argv)
             processor_buffer_length,      
             MPI_CHAR,                      
             0,                     
-            HOST_TAG,                            
+            1,                            
             MPI_COMM_WORLD                
         ); 
 
@@ -167,7 +167,7 @@ main(int argc, char **argv)
             SIZE*SIZE,          // maximum number of elements in receive buffer (integer)
             MPI_INT,            // datatype of each receive buffer element (handle)
             0,                  // rank of source (integer)
-            BASE_MATRIX_TAG,    // message tag (integer)
+            2,                  // message tag (integer)
             MPI_COMM_WORLD,     // communicator (handle)
             &status             // status object (Status)
         );
