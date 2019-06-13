@@ -143,7 +143,7 @@ main(int argc, char **argv)
         int processedRows = 0;
         do {
             // find an available worker
-            WorkerInfo availableWorker = null;
+            struct WorkerInfo availableWorker = null;
             for (workerId=1; workerId < workers_total; workerId++) {
                 if (workers[workerId].isAvailable) {
                     workers[workerId].isAvailable = 0;
