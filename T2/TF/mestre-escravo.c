@@ -6,6 +6,7 @@ struct WorkerInfo
    int workerId;
    int rowCapacity;
    int isAvailable;
+   int batchStartIndex;
 }; 
 
 void printMatrix(int rows, int columns, int matrix[rows][columns])
@@ -132,6 +133,7 @@ main(int argc, char **argv)
             for (workerId=1; workerId < workers_total; workerId++) {
                 if (workers[workerId].isAvailable) {
                     workers[workerId].isAvailable = 0;
+                    workers[workerId].batchStartIndex = currentRowToProcess;
                     availableWorkerId = workerId;
                     break;
                 }
@@ -155,19 +157,26 @@ main(int argc, char **argv)
                 // send batch to the worker
                 MPI_Send(&batchToProcess, rowsToProcess*SIZE, MPI_INT, availableWorkerId, PARTIAL_MATRIX_TAG, MPI_COMM_WORLD); 
 
-                // TODO - get the results
+                // get the results and flag the worker as available again
                 int partialResults[rowsToProcess][SIZE];
                 MPI_Recv(&partialResults, rowsToProcess*SIZE, MPI_INT, availableWorkerId, PARTIAL_RESULT_TAG, MPI_COMM_WORLD, &status);
-                printf("\nRESULTADO PARCIAL RECEBIDO");
+                printf("\nRESULTADO PARCIAL RECEBIDO\n");
                 printMatrix(rowsToProcess, SIZE, partialResults);
                 workers[status.MPI_SOURCE].isAvailable = 1;
 
-                // TODO - update final matrix           
-            } else {
-                printf("NENHUM ESCRAVO DISPONIVEL\n");
-                currentRowToProcess++;
+                // TODO - update final matrix
+                int offset = workers[workerId].batchStartIndex;
+                int partialResultRow, partialResultColumn;
+                for (partialResultRow = 0; partialResultRow < rowsToProcess; partialResultRow++) {
+                    for (partialResultColumn = 0; partialResultColumn < SIZE; partialResultColumn++) {
+                        mres[partialResultRow + offset][resultColumn] = partialResults[partialResultRow][resultColumn];
+                    }
+                }
             }
         } while (currentRowToProcess < SIZE);
+
+        printf("\nFINISHED\n");
+        printMatrix(SIZE, SIZE, mres);
     }
     else
     {
