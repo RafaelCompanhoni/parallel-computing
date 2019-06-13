@@ -158,7 +158,6 @@ main(int argc, char **argv)
                 // TODO - get the results
                 int partialResults[rowsToProcess][SIZE];
                 MPI_Recv(&partialResults, rowsToProcess*SIZE, MPI_INT, 0, PARTIAL_RESULT_TAG, MPI_COMM_WORLD, &status);
-                printf(status);
                 printf("\nRESULTADO PARCIAL RECEBIDO");
                 printMatrix(rowsToProcess, SIZE, partialResults);
                 workers[status.MPI_SOURCE].isAvailable = 1;
