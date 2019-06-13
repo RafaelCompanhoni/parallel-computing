@@ -93,7 +93,7 @@ main(int argc, char **argv)
 
             workers[workerId].lineCapacity = lines;
             workers[workerId].isAvailable = 1;
-            printf("\nESCRAVO[%d] pode processar %d linhas", worker, lines);
+            printf("\nESCRAVO[%d] pode processar %d linhas", workerId, lines);
         }
 
         // initialize matrix m1
