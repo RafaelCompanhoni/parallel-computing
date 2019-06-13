@@ -50,6 +50,7 @@ main(int argc, char **argv)
     if (my_rank == 0) // qual o meu papel: sou o mestre ou um dos escravos?
     {
         /**************** MASTER ****************/
+        printf("\nMESTRE\n");
 
         int m1[SIZE][SIZE], m2[SIZE][SIZE], mres[SIZE][SIZE];
         int i, j;
@@ -103,12 +104,12 @@ main(int argc, char **argv)
     else
     {
         /**************** SLAVE ****************/
+        printf("\nESCRAVO[%d]\n", my_rank);
 
         // recebo mensagem
         // MPI_Recv(&message, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
 
         // executo operação
-        printf("\nEscravo[%d]", my_rank);
         // printMatrix(message)
 
         // retorno resultado para o mestre
