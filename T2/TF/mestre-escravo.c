@@ -40,17 +40,22 @@ main(int argc, char **argv)
     int i;
     int my_rank;        // Identificador deste processo
     int proc_n;         // Numero de processos disparados pelo usuario na linha de comando (np)
-    int m2[SIZE][SIZE]; // Buffer para as mensagens
+    int m2[SIZE][SIZE]; // Matriz base
     MPI_Status status;  // estrutura que guarda o estado de retorno
+    
+    // Current node identifier
+    int processor_buffer_length = MPI_MAX_PROCESSOR_NAME;   
+    char hostname[buffer_length];
 
     MPI_Init(&argc, &argv); // funcao que inicializa o MPI, todo o codigo paralelo estah abaixo
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank); // pega pega o numero do processo atual (rank)
     MPI_Comm_size(MPI_COMM_WORLD, &proc_n);  // pega informacao do numero de processos (quantidade total)
+    MPI_Get_processor_name(hostname, &buffer_length);   // get current node info
 
     if (my_rank == 0) // qual o meu papel: sou o mestre ou um dos escravos?
     {
         /**************** MASTER ****************/
-        printf("\nMESTRE\n");
+        printf("\nMESTRE em %s\n", hostname);
 
         int m1[SIZE][SIZE], mres[SIZE][SIZE];
         int i, j, dest;
@@ -86,7 +91,7 @@ main(int argc, char **argv)
         // send second matrix to slaves
         for (dest=1; dest < proc_n; dest++)
         {
-            printf("\nSending to %d\n", dest);
+            printf("\nSending to %d", dest);
             MPI_Send(
                 &m2,            // initial address of send buffer (choice)
                 SIZE*SIZE,      // number of elements in send buffer (nonnegative integer)
@@ -96,25 +101,28 @@ main(int argc, char **argv)
                 MPI_COMM_WORLD  // communicator (handle)
             ); 
         }
-
+        
         // TODO - 'spread' the first matrix rows to the workers
 
-        // TODO -- assemble the results
-        
-        /*
-        MPI_Recv(&message,          // buffer onde será colocada a mensagem
-                    1,              // uma unidade do dado a ser recebido 
-                    MPI_INT,        // dado do tipo inteiro 
-                    MPI_ANY_SOURCE, // ler mensagem de qualquer emissor 
-                    MPI_ANY_TAG,    // ler mensagem de qualquer etiqueta (tag) 
-                    MPI_COMM_WORLD, // comunicador padrão 
-                    &status);       // estrtura com informações sobre a mensagem recebida 
-        */
+        int processedRows = 0;
+        do {
+            // TODO -- assemble the results
+            
+            /*
+            MPI_Recv(&message,          // buffer onde será colocada a mensagem
+                        1,              // uma unidade do dado a ser recebido 
+                        MPI_INT,        // dado do tipo inteiro 
+                        MPI_ANY_SOURCE, // ler mensagem de qualquer emissor 
+                        MPI_ANY_TAG,    // ler mensagem de qualquer etiqueta (tag) 
+                        MPI_COMM_WORLD, // comunicador padrão 
+                        &status);       // estrtura com informações sobre a mensagem recebida 
+            */
+        } while (processedRows < SIZE);
     }
     else
     {
-        /**************** SLAVE ****************/
-        printf("\nESCRAVO[%d]\n", my_rank);
+        /**************** WORKER ****************/
+        printf("\nESCRAVO[%d] em %s\n", my_rank, hostname);
 
         // receive base matrix
         MPI_Recv(
@@ -127,6 +135,10 @@ main(int argc, char **argv)
             &status         // status object (Status)
         );
         printMatrix(m2);
+
+        // receive partial matrix 
+        int partial[SIZE][SIZE];
+
 
         // retorno resultado para o mestre
         // MPI_Send(&message, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
