@@ -104,11 +104,12 @@ main(int argc, char **argv)
         
         // TODO - 'spread' the first matrix rows to the workers
 
+        /*
+        
+        // TODO -- assemble the results
         int processedRows = 0;
         do {
-            // TODO -- assemble the results
             
-            /*
             MPI_Recv(&message,          // buffer onde será colocada a mensagem
                         1,              // uma unidade do dado a ser recebido 
                         MPI_INT,        // dado do tipo inteiro 
@@ -116,8 +117,8 @@ main(int argc, char **argv)
                         MPI_ANY_TAG,    // ler mensagem de qualquer etiqueta (tag) 
                         MPI_COMM_WORLD, // comunicador padrão 
                         &status);       // estrtura com informações sobre a mensagem recebida 
-            */
         } while (processedRows < SIZE);
+        */
     }
     else
     {
