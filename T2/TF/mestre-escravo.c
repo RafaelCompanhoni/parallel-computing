@@ -74,7 +74,8 @@ main(int argc, char **argv)
                 MPI_CHAR,            
                 worker,              
                 1,    
-                MPI_COMM_WORLD
+                MPI_COMM_WORLD,
+                &status
             );
 
             int lines = 16;
