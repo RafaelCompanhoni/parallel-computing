@@ -15,6 +15,7 @@ void printMatrix(int matrix[SIZE][SIZE])
     }
 }
 
+/*
 int multiply()
 {
     int i, j, k;
@@ -32,6 +33,7 @@ int multiply()
         }
     }
 }
+*/
 
 main(int argc, char **argv)
 {
