@@ -66,19 +66,25 @@ main(int argc, char **argv)
         char workerHostname[processor_buffer_length];
         int linesPerWorker[workers_total];
 
-        // determine how many lines each worker can process at a time
+        // determines how many lines each worker can process at a time
         for (worker=1; worker < workers_total; worker++) {
             MPI_Recv(
                 &workerHostname,                
                 processor_buffer_length,        
-                MPI_CHAR,
-                worker,
-                HOST_TAG,
-                MPI_COMM_WORLD,
-                &status
+                MPI_CHAR,            
+                worker,              
+                HOST_TAG,    
+                MPI_COMM_WORLD,     
+                &status             
             );
 
-            printf("\nWorker %d can process %d lines", worker);
+            int lines = 16;
+            if(strcmp(workerHostname, hostname) == 0) {
+                lines = 15;
+            }
+
+            linesPerWorker[worker] = lines;
+            printf("\nWorker %d can process %d lines", worker, lines);
         }
 
         // initialize matrix m1
