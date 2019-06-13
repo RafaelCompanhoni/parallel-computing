@@ -69,13 +69,12 @@ main(int argc, char **argv)
         // determines how many lines each worker can process at a time
         for (worker=1; worker < workers_total; worker++) {
             MPI_Recv(
-                &workerHostname,                
+                workerHostname,                
                 processor_buffer_length,        
                 MPI_CHAR,            
                 worker,              
                 HOST_TAG,    
-                MPI_COMM_WORLD,     
-                &status             
+                MPI_COMM_WORLD
             );
 
             int lines = 16;
@@ -122,7 +121,7 @@ main(int argc, char **argv)
                 &m2,                // initial address of send buffer (choice)
                 SIZE*SIZE,          // number of elements in send buffer (nonnegative integer)
                 MPI_INT,            // datatype of each send buffer element (handle)
-                worker,               // rank of destination (integer)
+                worker,             // rank of destination (integer)
                 BASE_MATRIX_TAG,    // message tag (integer)
                 MPI_COMM_WORLD      // communicator (handle)
             ); 
@@ -153,12 +152,12 @@ main(int argc, char **argv)
 
         // inform the master its current host
         MPI_Send(
-            &hostname,                    // initial address of send buffer (choice)
-            processor_buffer_length,      // number of elements in send buffer (nonnegative integer)
-            MPI_INT,                      // datatype of each send buffer element (handle)
-            HOST_TAG,                     // rank of destination (integer)
-            1,                            // message tag (integer)
-            MPI_COMM_WORLD                // communicator (handle)
+            &hostname,                    
+            processor_buffer_length,      
+            MPI_CHAR,                      
+            0,                     
+            HOST_TAG,                            
+            MPI_COMM_WORLD                
         ); 
 
         // receive base matrix
