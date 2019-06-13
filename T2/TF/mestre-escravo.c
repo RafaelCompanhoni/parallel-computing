@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include "mpi.h"
 
-#define HOST_TAG = 1;
-#define BASE_MATRIX_TAG = 2;
+#define HOST_TAG 1;
+#define BASE_MATRIX_TAG 2;
 
 void printMatrix(int matrix[SIZE][SIZE])
 {
