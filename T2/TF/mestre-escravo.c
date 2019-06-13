@@ -3,6 +3,7 @@
 
 // HOST_TAG = 1
 // BASE_MATRIX_TAG = 2
+// PARTIAL_RESULT = 3
 
 void printMatrix(int matrix[SIZE][SIZE])
 {
@@ -40,10 +41,11 @@ int multiply()
 
 main(int argc, char **argv)
 {
-    int my_rank;        // process identifier
-    int workers_total;  // total amount of workers
-    int m2[SIZE][SIZE]; // base matrix
-    MPI_Status status;  // communication status
+    int my_rank;                    // process identifier
+    int workers_total;              // total amount of workers
+    int m2[SIZE][SIZE];             // base matrix
+    int partialResult[SIZE][SIZE];  // partial result computed by a worker
+    MPI_Status status;              // communication status
     
     // for host identification
     int processor_buffer_length = MPI_MAX_PROCESSOR_NAME;   
@@ -60,11 +62,11 @@ main(int argc, char **argv)
         /**************** MASTER ****************/
         printf("\nMESTRE em %s\n", hostname);
 
-        int m1[SIZE][SIZE], mres[SIZE][SIZE];
+        int m1[SIZE][SIZE], mres[SIZE][SIZE];   
         int i, j, worker;
         int k = 1;
         char workerHostname[processor_buffer_length];
-        int linesPerWorker[workers_total];
+        int workerInfo[workers_total];
 
         // determines how many lines each worker can process at a time
         for (worker=1; worker < workers_total; worker++) {
@@ -80,11 +82,11 @@ main(int argc, char **argv)
 
             int lines = 16;
             if(strcmp(workerHostname, hostname) == 0) {
-                lines = 15;
+                lines = 15; // whenever the worker is at the same host as the master
             }
 
-            linesPerWorker[worker] = lines;
-            printf("\nWorker %d can process %d lines", worker, lines);
+            workerInfo[worker] = lines;
+            printf("\nESCRAVO[%d] pode processar %d linhas", worker, lines);
         }
 
         // initialize matrix m1
@@ -100,7 +102,7 @@ main(int argc, char **argv)
             k++;
         }
 
-        // initialize matrix m2
+        // initialize matrix m2 (base matrix)
         k = 1;
         for (j = 0; j < SIZE; j++)
         {
@@ -114,7 +116,7 @@ main(int argc, char **argv)
             k++;
         }
 
-        // send second matrix to slaves
+        // send base matrix to workers
         for (worker=1; worker < workers_total; worker++)
         {
             printf("\nSending to %d", worker);
@@ -127,22 +129,26 @@ main(int argc, char **argv)
                 MPI_COMM_WORLD      // communicator (handle)
             ); 
         }
-        
-        // TODO - 'spread' the first matrix rows to the workers
 
+        // TODO - send lines and process results
         /*
-        
-        // TODO -- assemble the results
         int processedRows = 0;
         do {
-            
-            MPI_Recv(&message,          // buffer onde será colocada a mensagem
-                        1,              // uma unidade do dado a ser recebido 
-                        MPI_INT,        // dado do tipo inteiro 
-                        MPI_ANY_SOURCE, // ler mensagem de qualquer emissor 
-                        MPI_ANY_TAG,    // ler mensagem de qualquer etiqueta (tag) 
-                        MPI_COMM_WORLD, // comunicador padrão 
-                        &status);       // estrtura com informações sobre a mensagem recebida 
+            // 1. get next batch of lines from 'm1'
+            // 2. send it to the first available worker
+            // 3. read the results and assemble the final matrix
+
+            // MPI_Recv(
+            //     &message,           // buffer onde será colocada a mensagem
+            //     1,                  // uma unidade do dado a ser recebido 
+            //     MPI_INT,            // dado do tipo inteiro 
+            //     MPI_ANY_SOURCE,     // ler mensagem de qualquer emissor 
+            //     3,                  // PARTIAL_RESULT 
+            //     MPI_COMM_WORLD,     // comunicador padrão 
+            //     &status             // estrtura com informações sobre a mensagem recebida 
+            // );           
+
+            processedRows++;
         } while (processedRows < SIZE);
         */
     }
@@ -172,11 +178,11 @@ main(int argc, char **argv)
             &status             // status object (Status)
         );
 
-        // receive partial matrix 
-        int partial[SIZE][SIZE];
+        // TODO - receive partial matrix 
+        
+        // TODO - multiply
 
-        // retorno resultado para o mestre
-        // MPI_Send(&message, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
+        // TODO - send results back to the master
     }
 
     MPI_Finalize();
