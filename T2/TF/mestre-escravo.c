@@ -157,11 +157,13 @@ main(int argc, char **argv)
                 
                 int rowsToProcess = workers[availableWorkerId].rowCapacity;
                 int batchToProcess[rowsToProcess][SIZE];
-                int row;
+                int row, column;
 
                 // get next batch of lines from 'm1'
                 for (row = 0; row < rowsToProcess; row++) {
-                    batchToProcess[row] = m1[currentRowToProcess];
+                    for (column = 0; column < SIZE; column++) {
+                        batchToProcess[row][column] = m1[currentRowToProcess][column];
+                    }
                     currentRowToProcess++;
                 }
 
@@ -187,8 +189,6 @@ main(int argc, char **argv)
             //     MPI_COMM_WORLD,     // comunicador padrão 
             //     &status             // estrtura com informações sobre a mensagem recebida 
             // );           
-
-            processedRows++;
         } while (currentRowToProcess < SIZE);
     }
     else
