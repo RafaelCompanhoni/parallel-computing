@@ -157,7 +157,7 @@ main(int argc, char **argv)
 
                 // TODO - get the results
                 int partialResults[rowsToProcess][SIZE];
-                MPI_Recv(&partialResults, rowsToProcess*SIZE, MPI_INT, 0, PARTIAL_RESULT_TAG, MPI_COMM_WORLD, &status);
+                MPI_Recv(&partialResults, rowsToProcess*SIZE, MPI_INT, availableWorkerId, PARTIAL_RESULT_TAG, MPI_COMM_WORLD, &status);
                 printf("\nRESULTADO PARCIAL RECEBIDO");
                 printMatrix(rowsToProcess, SIZE, partialResults);
                 workers[status.MPI_SOURCE].isAvailable = 1;
@@ -187,7 +187,7 @@ main(int argc, char **argv)
         // receive batch of rows to process
         int partialMatrix[currentCapacity][SIZE];
         MPI_Recv(&partialMatrix, currentCapacity*SIZE, MPI_INT, 0, PARTIAL_MATRIX_TAG, MPI_COMM_WORLD, &status);
-        printf("\n*** BATCH RECEIVED FROM MASTER");
+        printf("\n*** BATCH RECEBIDO DO MESTRE");
         printMatrix(currentCapacity, SIZE, partialMatrix);
         
         // multiply partialMatrix with base matrix 'm2'
