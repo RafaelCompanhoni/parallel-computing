@@ -84,7 +84,7 @@ main(int argc, char **argv)
         }
 
         // send second matrix to slaves
-        MPI_Send(&(m2[0][0]), 1, MPI_INT, i, 1, MPI_COMM_WORLD); 
+        MPI_Send(&m2, SIZE*SIZE, MPI_INT, i, 1, MPI_COMM_WORLD); 
         
         /*
         MPI_Recv(&message,          // buffer onde será colocada a mensagem
@@ -102,7 +102,7 @@ main(int argc, char **argv)
         printf("\nESCRAVO[%d]\n", my_rank);
 
         // receive base matrix
-        MPI_Recv(&(m2[0][0]), 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
+        MPI_Recv(&m2, SIZE*SIZE, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
         printMatrix(m2);
 
         // retorno resultado para o mestre
