@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include "mpi.h"
 
+#define HOST_TAG = 1;
+#define BASE_MATRIX_TAG = 2;
+
 void printMatrix(int matrix[SIZE][SIZE])
 {
     int i, j;
@@ -37,29 +40,46 @@ int multiply()
 
 main(int argc, char **argv)
 {
-    int i;
-    int my_rank;        // Identificador deste processo
-    int proc_n;         // Numero de processos disparados pelo usuario na linha de comando (np)
-    int m2[SIZE][SIZE]; // Matriz base
-    MPI_Status status;  // estrutura que guarda o estado de retorno
+    int my_rank;        // process identifier
+    int workers_total;  // total amount of workers
+    int m2[SIZE][SIZE]; // base matrix
+    MPI_Status status;  // communication status
     
-    // Current node identifier
+    // for host identification
     int processor_buffer_length = MPI_MAX_PROCESSOR_NAME;   
     char hostname[processor_buffer_length];
 
-    MPI_Init(&argc, &argv); // funcao que inicializa o MPI, todo o codigo paralelo estah abaixo
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank); // pega pega o numero do processo atual (rank)
-    MPI_Comm_size(MPI_COMM_WORLD, &proc_n);  // pega informacao do numero de processos (quantidade total)
-    MPI_Get_processor_name(hostname, &processor_buffer_length);   // get current node info
+    // MPI initialization
+    MPI_Init(&argc, &argv); 
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank); 
+    MPI_Comm_size(MPI_COMM_WORLD, &workers_total);  
+    MPI_Get_processor_name(hostname, &processor_buffer_length);  
 
-    if (my_rank == 0) // qual o meu papel: sou o mestre ou um dos escravos?
+    if (my_rank == 0)
     {
         /**************** MASTER ****************/
         printf("\nMESTRE em %s\n", hostname);
 
         int m1[SIZE][SIZE], mres[SIZE][SIZE];
-        int i, j, dest;
+        int i, j, worker;
         int k = 1;
+        char workerHostname[processor_buffer_length];
+        int linesPerWorker[workers_total];
+
+        // determine how many lines each worker can process at a time
+        for (worker=1; worker < workers_total; worker++) {
+            MPI_Recv(
+                &workerHostname,                
+                processor_buffer_length,        
+                MPI_CHAR,
+                worker,
+                HOST_TAG,
+                MPI_COMM_WORLD,
+                &status
+            );
+
+            printf("\nWorker %d can process %d lines", worker)
+        }
 
         // initialize matrix m1
         for (i = 0; i < SIZE; i++)
@@ -89,16 +109,16 @@ main(int argc, char **argv)
         }
 
         // send second matrix to slaves
-        for (dest=1; dest < proc_n; dest++)
+        for (worker=1; worker < workers_total; worker++)
         {
-            printf("\nSending to %d", dest);
+            printf("\nSending to %d", worker);
             MPI_Send(
-                &m2,            // initial address of send buffer (choice)
-                SIZE*SIZE,      // number of elements in send buffer (nonnegative integer)
-                MPI_INT,        // datatype of each send buffer element (handle)
-                dest,           // rank of destination (integer)
-                1,              // message tag (integer)
-                MPI_COMM_WORLD  // communicator (handle)
+                &m2,                // initial address of send buffer (choice)
+                SIZE*SIZE,          // number of elements in send buffer (nonnegative integer)
+                MPI_INT,            // datatype of each send buffer element (handle)
+                worker,               // rank of destination (integer)
+                BASE_MATRIX_TAG,    // message tag (integer)
+                MPI_COMM_WORLD      // communicator (handle)
             ); 
         }
         
@@ -125,15 +145,25 @@ main(int argc, char **argv)
         /**************** WORKER ****************/
         printf("\nESCRAVO[%d] em %s\n", my_rank, hostname);
 
+        // inform the master its current host
+        MPI_Send(
+            &hostname,                    // initial address of send buffer (choice)
+            processor_buffer_length,      // number of elements in send buffer (nonnegative integer)
+            MPI_INT,                      // datatype of each send buffer element (handle)
+            HOST_TAG,                     // rank of destination (integer)
+            1,                            // message tag (integer)
+            MPI_COMM_WORLD                // communicator (handle)
+        ); 
+
         // receive base matrix
         MPI_Recv(
-            &m2,            // initial address of receive buffer (choice)
-            SIZE*SIZE,      // maximum number of elements in receive buffer (integer)
-            MPI_INT,        // datatype of each receive buffer element (handle)
-            0,              // rank of source (integer)
-            1,              // message tag (integer)
-            MPI_COMM_WORLD, // communicator (handle)
-            &status         // status object (Status)
+            &m2,                // initial address of receive buffer (choice)
+            SIZE*SIZE,          // maximum number of elements in receive buffer (integer)
+            MPI_INT,            // datatype of each receive buffer element (handle)
+            0,                  // rank of source (integer)
+            BASE_MATRIX_TAG,    // message tag (integer)
+            MPI_COMM_WORLD,     // communicator (handle)
+            &status             // status object (Status)
         );
         printMatrix(m2);
 
