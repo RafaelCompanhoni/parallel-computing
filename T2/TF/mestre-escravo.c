@@ -117,8 +117,16 @@ main(int argc, char **argv)
         printf("\nESCRAVO[%d]\n", my_rank);
 
         // receive base matrix
-        // MPI_Recv(&m2, SIZE*SIZE, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
-        // printMatrix(m2);
+        MPI_Recv(
+            &m2,            // initial address of receive buffer (choice)
+            SIZE*SIZE,      // maximum number of elements in receive buffer (integer)
+            MPI_INT,        // datatype of each receive buffer element (handle)
+            0,              // rank of source (integer)
+            1,              // message tag (integer)
+            MPI_COMM_WORLD, // communicator (handle)
+            &status         // status object (Status)
+        );
+        printMatrix(m2);
 
         // retorno resultado para o mestre
         // MPI_Send(&message, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
