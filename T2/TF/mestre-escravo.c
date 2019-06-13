@@ -82,10 +82,10 @@ main(int argc, char **argv)
             k++;
         }
 
-        printf("\nMatriz 1");
+        printf("\nMatriz 1\n");
         printMatrix(m1);
 
-        printf("\nMatriz 1");
+        printf("\nMatriz 2\n");
         printMatrix(m2);
 
         /*
