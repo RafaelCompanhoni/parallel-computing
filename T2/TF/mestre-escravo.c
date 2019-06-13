@@ -48,7 +48,8 @@ int multiply()
 
 main(int argc, char **argv)
 {
-    int const HOST_DISCOVERY = 1;
+    int const HOST_DISCOVERY_TAG = 1;
+    int const BASE_MATRIX_TAG = 2;
 
     int my_rank;                    // process identifier
     int workers_total;              // total amount of workers
@@ -84,7 +85,7 @@ main(int argc, char **argv)
                 processor_buffer_length,        
                 MPI_CHAR,            
                 workerId,              
-                HOST_DISCOVERY,
+                HOST_DISCOVERY_TAG,
                 MPI_COMM_WORLD,
                 &status
             );
@@ -136,12 +137,12 @@ main(int argc, char **argv)
         {
             printf("\nEnviando matriz base para ESCRAVO[%d]", workerId);
             MPI_Send(
-                &m2,                // initial address of send buffer (choice)
-                SIZE*SIZE,          // number of elements in send buffer (nonnegative integer)
-                MPI_INT,            // datatype of each send buffer element (handle)
-                workerId,           // rank of destination (integer)
-                2,                  // message tag (integer)
-                MPI_COMM_WORLD      // communicator (handle)
+                &m2,                
+                SIZE*SIZE,          
+                MPI_INT,            
+                workerId,           
+                BASE_MATRIX_TAG,    
+                MPI_COMM_WORLD      
             ); 
         }
 
@@ -204,19 +205,19 @@ main(int argc, char **argv)
             processor_buffer_length,      
             MPI_CHAR,                      
             0,                     
-            1,                            
+            HOST_DISCOVERY_TAG,                            
             MPI_COMM_WORLD                
         ); 
 
         // receive base matrix
         MPI_Recv(
-            &m2,                // initial address of receive buffer (choice)
-            SIZE*SIZE,          // maximum number of elements in receive buffer (integer)
-            MPI_INT,            // datatype of each receive buffer element (handle)
-            0,                  // rank of source (integer)
-            2,                  // message tag (integer)
-            MPI_COMM_WORLD,     // communicator (handle)
-            &status             // status object (Status)
+            &m2,                
+            SIZE*SIZE,          
+            MPI_INT,            
+            0,                  
+            BASE_MATRIX_TAG,    
+            MPI_COMM_WORLD,     
+            &status             
         );
 
         // TODO - receive partial matrix 
