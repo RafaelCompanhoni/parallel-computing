@@ -45,12 +45,12 @@ main(int argc, char **argv)
     
     // Current node identifier
     int processor_buffer_length = MPI_MAX_PROCESSOR_NAME;   
-    char hostname[buffer_length];
+    char hostname[processor_buffer_length];
 
     MPI_Init(&argc, &argv); // funcao que inicializa o MPI, todo o codigo paralelo estah abaixo
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank); // pega pega o numero do processo atual (rank)
     MPI_Comm_size(MPI_COMM_WORLD, &proc_n);  // pega informacao do numero de processos (quantidade total)
-    MPI_Get_processor_name(hostname, &buffer_length);   // get current node info
+    MPI_Get_processor_name(hostname, &processor_buffer_length);   // get current node info
 
     if (my_rank == 0) // qual o meu papel: sou o mestre ou um dos escravos?
     {
