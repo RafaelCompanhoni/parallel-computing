@@ -86,6 +86,7 @@ main(int argc, char **argv)
         // send second matrix to slaves
         for (dest=1; dest<=proc_n; dest++)
         {
+            printf('\nSending to %d', dest);
             MPI_Send(
                 &m2,            // initial address of send buffer (choice)
                 SIZE*SIZE,      // number of elements in send buffer (nonnegative integer)
