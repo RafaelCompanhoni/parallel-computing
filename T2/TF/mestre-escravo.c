@@ -48,6 +48,8 @@ int multiply()
 
 main(int argc, char **argv)
 {
+    int const HOST_DISCOVERY = 1;
+
     int my_rank;                    // process identifier
     int workers_total;              // total amount of workers
     int m2[SIZE][SIZE];             // base matrix
@@ -82,7 +84,7 @@ main(int argc, char **argv)
                 processor_buffer_length,        
                 MPI_CHAR,            
                 workerId,              
-                1, // HOST_DISCOVERY
+                HOST_DISCOVERY,
                 MPI_COMM_WORLD,
                 &status
             );
@@ -137,7 +139,7 @@ main(int argc, char **argv)
                 &m2,                // initial address of send buffer (choice)
                 SIZE*SIZE,          // number of elements in send buffer (nonnegative integer)
                 MPI_INT,            // datatype of each send buffer element (handle)
-                workerId,             // rank of destination (integer)
+                workerId,           // rank of destination (integer)
                 2,                  // message tag (integer)
                 MPI_COMM_WORLD      // communicator (handle)
             ); 
