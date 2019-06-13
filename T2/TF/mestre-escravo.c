@@ -7,7 +7,7 @@
 
 struct workerInfo 
 { 
-   char hostname[MPI_MAX_PROCESSOR_NAME];
+   int lineCapacity;
    int isAvailable;
 }; 
 
