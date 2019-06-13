@@ -119,7 +119,7 @@ main(int argc, char **argv)
         // send base matrix to workers
         for (worker=1; worker < workers_total; worker++)
         {
-            printf("\nSending to %d", worker);
+            printf("\nEnviando matriz base para ESCRAVO[%d]", worker);
             MPI_Send(
                 &m2,                // initial address of send buffer (choice)
                 SIZE*SIZE,          // number of elements in send buffer (nonnegative integer)
