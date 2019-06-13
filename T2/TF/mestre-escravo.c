@@ -83,15 +83,10 @@ main(int argc, char **argv)
             k++;
         }
 
-        printf("\nMatriz 1\n");
-        printMatrix(m1);
-
-        printf("\nMatriz 2\n");
-        printMatrix(m2);
-
+        // send second matrix to slaves
+        MPI_Send(&m2, 1, MPI_INT, i, 1, MPI_COMM_WORLD); 
+        
         /*
-        MPI_Send(&message, 1, MPI_INT, i, 1, MPI_COMM_WORLD); // envio trabalho saco[i-1] para escravo com id = i
-
         MPI_Recv(&message,          // buffer onde será colocada a mensagem
                     1,              // uma unidade do dado a ser recebido 
                     MPI_INT,        // dado do tipo inteiro 
@@ -106,11 +101,9 @@ main(int argc, char **argv)
         /**************** SLAVE ****************/
         printf("\nESCRAVO[%d]\n", my_rank);
 
-        // recebo mensagem
-        // MPI_Recv(&message, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
-
-        // executo operação
-        // printMatrix(message)
+        // receive base matrix
+        MPI_Recv(&message, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
+        printMatrix(message);
 
         // retorno resultado para o mestre
         // MPI_Send(&message, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
