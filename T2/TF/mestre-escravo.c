@@ -5,7 +5,7 @@
 // BASE_MATRIX_TAG = 2
 // PARTIAL_RESULT = 3
 
-struct workerInfo 
+struct WorkerInfo 
 { 
    int lineCapacity;
    int isAvailable;
@@ -69,18 +69,18 @@ main(int argc, char **argv)
         printf("\nMESTRE em %s\n", hostname);
 
         int m1[SIZE][SIZE], mres[SIZE][SIZE];   
-        int i, j, worker;
+        int i, j, workerId;
         int k = 1;
         char workerHostname[processor_buffer_length];
-        int workerInfo[workers_total];
+        WorkerInfo workers[workers_total];
 
         // determines how many lines each worker can process at a time
-        for (worker=1; worker < workers_total; worker++) {
+        for (workerId=1; workerId < workers_total; workerId++) {
             MPI_Recv(
                 workerHostname,                
                 processor_buffer_length,        
                 MPI_CHAR,            
-                worker,              
+                workerId,              
                 1, // HOST_DISCOVERY
                 MPI_COMM_WORLD,
                 &status
@@ -91,7 +91,8 @@ main(int argc, char **argv)
                 lines = 15; // whenever the worker is at the same host as the master
             }
 
-            workerInfo[worker] = lines;
+            workers[workerId].lineCapacity = lines;
+            workers[workerId].isAvailable = 1;
             printf("\nESCRAVO[%d] pode processar %d linhas", worker, lines);
         }
 
@@ -123,14 +124,14 @@ main(int argc, char **argv)
         }
 
         // send base matrix to workers
-        for (worker=1; worker < workers_total; worker++)
+        for (workerId=1; workerId < workers_total; workerId++)
         {
-            printf("\nEnviando matriz base para ESCRAVO[%d]", worker);
+            printf("\nEnviando matriz base para ESCRAVO[%d]", workerId);
             MPI_Send(
                 &m2,                // initial address of send buffer (choice)
                 SIZE*SIZE,          // number of elements in send buffer (nonnegative integer)
                 MPI_INT,            // datatype of each send buffer element (handle)
-                worker,             // rank of destination (integer)
+                workerId,             // rank of destination (integer)
                 2,                  // message tag (integer)
                 MPI_COMM_WORLD      // communicator (handle)
             ); 
