@@ -187,7 +187,7 @@ main(int argc, char **argv)
         // receive batch of rows to process
         int partialMatrix[currentCapacity][SIZE];
         MPI_Recv(&partialMatrix, currentCapacity*SIZE, MPI_INT, 0, PARTIAL_MATRIX_TAG, MPI_COMM_WORLD, &status);
-        printf("\n*** BATCH RECEBIDO DO MESTRE");
+        printf("\n*** BATCH RECEBIDO DO MESTRE\n");
         printMatrix(currentCapacity, SIZE, partialMatrix);
         
         // multiply partialMatrix with base matrix 'm2'
