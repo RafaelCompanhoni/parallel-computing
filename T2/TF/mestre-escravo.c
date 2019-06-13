@@ -169,7 +169,7 @@ main(int argc, char **argv)
             }
 
             if (availableWorkerId) {
-                printf("ESCRAVO[%d] DISPONIVEL\n", availableWorkerId);
+                printf("\nESCRAVO[%d] DISPONIVEL\n", availableWorkerId);
                 
                 int rowsToProcess = workers[availableWorkerId].rowCapacity;
                 int batchToProcess[rowsToProcess][SIZE];
@@ -217,15 +217,30 @@ main(int argc, char **argv)
         // receive base matrix
         MPI_Recv(&m2, SIZE*SIZE, MPI_INT, 0, BASE_MATRIX_TAG, MPI_COMM_WORLD, &status);
 
-        // TODO - receive batch of rows to process
+        // receive batch of rows to process
         int partialMatrix[currentCapacity][SIZE];
         MPI_Recv(&partialMatrix, currentCapacity*SIZE, MPI_INT, 0, PARTIAL_MATRIX_TAG, MPI_COMM_WORLD, &status);
         printf("\n*** BATCH RECEIVED FROM MASTER");
         printMatrix(currentCapacity, SIZE, partialMatrix);
         
         // TODO - multiply
+        int partialResult = [currentCapacity][SIZE];
+        #pragma omp parallel for private(j, k) num_threads(currentCapacity)
+        for (i = 0; i < currentCapacity; i++)
+        {
+            for (j = 0; j < SIZE; j++)
+            {
+                partialResult[i][j] = 0;
+                for (k = 0; k < SIZE; k++)
+                {
+                    partialResult[i][j] += partialMatrix[i][k] * m2[k][j];
+                }
+            }
+        }
 
         // TODO - send results back to the master
+        printf("\n*** PARTIAL RESULT");
+        printMatrix(currentCapacity, SIZE, partialResult);
     }
 
     MPI_Finalize();
