@@ -7,6 +7,7 @@
 
 struct WorkerInfo 
 { 
+   int workerId;
    int lineCapacity;
    int isAvailable;
 }; 
@@ -91,6 +92,7 @@ main(int argc, char **argv)
                 lines = 15; // whenever the worker is at the same host as the master
             }
 
+            workers[workerId].workerId = workerId;
             workers[workerId].lineCapacity = lines;
             workers[workerId].isAvailable = 1;
             printf("\nESCRAVO[%d] pode processar %d linhas", workerId, lines);
@@ -138,9 +140,24 @@ main(int argc, char **argv)
         }
 
         // TODO - send lines and process results
-        /*
         int processedRows = 0;
         do {
+            // find an available worker
+            WorkerInfo availableWorker = null;
+            for (workerId=1; workerId < workers_total; workerId++) {
+                if (workers[workerId].isAvailable) {
+                    workers[workerId].isAvailable = 0;
+                    availableWorker = workers[workerId];
+                    break;
+                }
+            }
+
+            if (availableWorker != null) {
+                printf("WORKER AVAILABLE");
+            } else {
+                printf("NO WORKER AVAILABLE");
+            }
+
             // 1. get next batch of lines from 'm1'
             // 2. send it to the first available worker
             // 3. read the results and assemble the final matrix
@@ -157,7 +174,6 @@ main(int argc, char **argv)
 
             processedRows++;
         } while (processedRows < SIZE);
-        */
     }
     else
     {
