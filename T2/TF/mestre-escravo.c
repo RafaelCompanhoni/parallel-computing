@@ -110,6 +110,7 @@ main(int argc, char **argv)
             }
             k++;
         }
+        
 
         // initialize matrix m2 (base matrix)
         k = 1;
@@ -124,6 +125,9 @@ main(int argc, char **argv)
             }
             k++;
         }
+
+        printMatrix(SIZE, SIZE, m1);
+        printMatrix(SIZE, SIZE, m2);
 
         // send base matrix to workers
         for (workerId=1; workerId < workers_total; workerId++)
@@ -168,30 +172,23 @@ main(int argc, char **argv)
                 }
 
                 // TODO - send batch to the worker
-                printMatrix(SIZE, SIZE, m1);
-
                 printf("\n\nENVIANDO BATCH PARA ESCRAVO\n");
                 printMatrix(rowsToProcess, SIZE, batchToProcess);
 
                 // TODO - read the results and assemble the final matrix
+                // MPI_Recv(
+                //     &message,           // buffer onde será colocada a mensagem
+                //     1,                  // uma unidade do dado a ser recebido 
+                //     MPI_INT,            // dado do tipo inteiro 
+                //     MPI_ANY_SOURCE,     // ler mensagem de qualquer emissor 
+                //     3,                  // PARTIAL_RESULT 
+                //     MPI_COMM_WORLD,     // comunicador padrão 
+                //     &status             // estrtura com informações sobre a mensagem recebida 
+                // );           
             } else {
                 printf("NENHUM ESCRAVO DISPONIVEL\n");
                 currentRowToProcess++;
             }
-
-            // 1. get next batch of lines from 'm1'
-            // 2. send it to the first available worker
-            // 3. read the results and assemble the final matrix
-
-            // MPI_Recv(
-            //     &message,           // buffer onde será colocada a mensagem
-            //     1,                  // uma unidade do dado a ser recebido 
-            //     MPI_INT,            // dado do tipo inteiro 
-            //     MPI_ANY_SOURCE,     // ler mensagem de qualquer emissor 
-            //     3,                  // PARTIAL_RESULT 
-            //     MPI_COMM_WORLD,     // comunicador padrão 
-            //     &status             // estrtura com informações sobre a mensagem recebida 
-            // );           
         } while (currentRowToProcess < SIZE);
     }
     else
