@@ -53,7 +53,7 @@ main(int argc, char **argv)
         printf("\nMESTRE\n");
 
         int m1[SIZE][SIZE], mres[SIZE][SIZE];
-        int i, j;
+        int i, j, dest;
         int k = 1;
 
         // initialize matrix m1
@@ -84,7 +84,10 @@ main(int argc, char **argv)
         }
 
         // send second matrix to slaves
-        MPI_Send(&m2, SIZE*SIZE, MPI_INT, i, 1, MPI_COMM_WORLD); 
+        for (dest=1; dest<=proc_n; dest++)
+        {
+            MPI_Send(&m2, SIZE*SIZE, MPI_INT, i, 1, MPI_COMM_WORLD); 
+        }
         
         /*
         MPI_Recv(&message,          // buffer onde será colocada a mensagem
