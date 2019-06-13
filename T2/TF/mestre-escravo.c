@@ -168,7 +168,9 @@ main(int argc, char **argv)
                 }
 
                 // TODO - send batch to the worker
-                printf("ENVIANDO BATCH PARA ESCRAVO\n");
+                printMatrix(SIZE, SIZE, m1);
+
+                printf("\n\nENVIANDO BATCH PARA ESCRAVO\n");
                 printMatrix(rowsToProcess, SIZE, batchToProcess);
 
                 // TODO - read the results and assemble the final matrix
