@@ -73,7 +73,7 @@ main(int argc, char **argv)
                 processor_buffer_length,        
                 MPI_CHAR,            
                 worker,              
-                HOST_TAG,    
+                1,    
                 MPI_COMM_WORLD
             );
 
