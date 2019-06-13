@@ -38,10 +38,10 @@ int multiply()
 main(int argc, char **argv)
 {
     int i;
-    int my_rank;       // Identificador deste processo
-    int proc_n;        // Numero de processos disparados pelo usuario na linha de comando (np)
-    int message;       // Buffer para as mensagens
-    MPI_Status status; // estrutura que guarda o estado de retorno
+    int my_rank;        // Identificador deste processo
+    int proc_n;         // Numero de processos disparados pelo usuario na linha de comando (np)
+    int m2[SIZE][SIZE]; // Buffer para as mensagens
+    MPI_Status status;  // estrutura que guarda o estado de retorno
 
     MPI_Init(&argc, &argv); // funcao que inicializa o MPI, todo o codigo paralelo estah abaixo
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank); // pega pega o numero do processo atual (rank)
@@ -52,7 +52,7 @@ main(int argc, char **argv)
         /**************** MASTER ****************/
         printf("\nMESTRE\n");
 
-        int m1[SIZE][SIZE], m2[SIZE][SIZE], mres[SIZE][SIZE];
+        int m1[SIZE][SIZE], mres[SIZE][SIZE];
         int i, j;
         int k = 1;
 
@@ -84,7 +84,7 @@ main(int argc, char **argv)
         }
 
         // send second matrix to slaves
-        MPI_Send(&m2, 1, MPI_INT, i, 1, MPI_COMM_WORLD); 
+        MPI_Send(&(m2[0][0]), 1, MPI_INT, i, 1, MPI_COMM_WORLD); 
         
         /*
         MPI_Recv(&message,          // buffer onde será colocada a mensagem
@@ -102,8 +102,8 @@ main(int argc, char **argv)
         printf("\nESCRAVO[%d]\n", my_rank);
 
         // receive base matrix
-        MPI_Recv(&message, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
-        printMatrix(message);
+        MPI_Recv(&(m2[0][0]), 1, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
+        printMatrix(m2);
 
         // retorno resultado para o mestre
         // MPI_Send(&message, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
