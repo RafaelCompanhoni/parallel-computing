@@ -221,7 +221,7 @@ main(int argc, char **argv)
         MPI_Send(&hostname, processor_buffer_length, MPI_CHAR, 0, HOST_DISCOVERY_TAG, MPI_COMM_WORLD);
 
         // receive current capacity
-        MPI_Recv(&currentCapacity, 1, MPI_INT, 0, WORKER_CAPACITY_TAG, MPI_COMM_WORLD);
+        MPI_Recv(&currentCapacity, 1, MPI_INT, 0, WORKER_CAPACITY_TAG, MPI_COMM_WORLD, &status);
         printf("MINHA CAPACIDADE: %d", currentCapacity);
 
         // receive base matrix
