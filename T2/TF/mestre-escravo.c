@@ -50,6 +50,8 @@ main(int argc, char **argv)
 {
     int const HOST_DISCOVERY_TAG = 1;
     int const BASE_MATRIX_TAG = 2;
+    int const PARTIAL_MATRIX_TAG = 3;
+    int const WORKER_CAPACITY_TAG = 4;
 
     int my_rank;                    // process identifier
     int workers_total;              // total amount of workers
@@ -90,15 +92,25 @@ main(int argc, char **argv)
                 &status
             );
 
-            int lines = 2; // 16
+            int rows = 2; // 16
             if(strcmp(workerHostname, hostname) == 0) {
-                lines = 1; // 15, whenever the worker is at the same host as the master
+                rows = 1; // 15, whenever the worker is at the same host as the master
             }
 
             workers[workerId].workerId = workerId;
-            workers[workerId].rowCapacity = lines;
+            workers[workerId].rowCapacity = rows;
             workers[workerId].isAvailable = 1;
-            printf("\nESCRAVO[%d] pode processar %d linhas", workerId, lines);
+            printf("\nESCRAVO[%d] pode processar %d linhas", workerId, rows);
+
+            // informs the worker how many rows it can process
+            MPI_Send(
+                &rows,                
+                1,          
+                MPI_INT,            
+                workerId,           
+                WORKER_CAPACITY_TAG,    
+                MPI_COMM_WORLD      
+            ); 
         }
 
         // initialize matrix m1
@@ -128,9 +140,6 @@ main(int argc, char **argv)
             }
             k++;
         }
-
-        printMatrix(SIZE, SIZE, m1);
-        printMatrix(SIZE, SIZE, m2);
 
         // send base matrix to workers
         for (workerId=1; workerId < workers_total; workerId++)
@@ -177,6 +186,14 @@ main(int argc, char **argv)
                 // TODO - send batch to the worker
                 printf("\n\nENVIANDO BATCH PARA ESCRAVO\n");
                 printMatrix(rowsToProcess, SIZE, batchToProcess);
+                // MPI_Send(
+                //     &batchToProcess,                
+                //     rowsToProcess*SIZE,          
+                //     MPI_INT,            
+                //     availableWorkerId,           
+                //     PARTIAL_MATRIX_TAG,    
+                //     MPI_COMM_WORLD      
+                // ); 
 
                 // TODO - read the results and assemble the final matrix
                 // MPI_Recv(
@@ -198,16 +215,14 @@ main(int argc, char **argv)
     {
         /**************** WORKER ****************/
         printf("\nESCRAVO[%d] em %s\n", my_rank, hostname);
+        int currentCapacity;
 
         // inform the master its current host
-        MPI_Send(
-            &hostname,                    
-            processor_buffer_length,      
-            MPI_CHAR,                      
-            0,                     
-            HOST_DISCOVERY_TAG,                            
-            MPI_COMM_WORLD                
-        ); 
+        MPI_Send(&hostname, processor_buffer_length, MPI_CHAR, 0, HOST_DISCOVERY_TAG, MPI_COMM_WORLD);
+
+        // receive current capacity
+        MPI_Recv(&currentCapacity, 1, MPI_INT, 0, WORKER_CAPACITY_TAG, MPI_COMM_WORLD);
+        printf("MINHA CAPACIDADE: %d", currentCapacity);
 
         // receive base matrix
         MPI_Recv(
@@ -220,7 +235,7 @@ main(int argc, char **argv)
             &status             
         );
 
-        // TODO - receive partial matrix 
+        // TODO - receive partial matrix
         
         // TODO - multiply
 
