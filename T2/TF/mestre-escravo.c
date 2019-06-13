@@ -78,7 +78,7 @@ main(int argc, char **argv)
                 &status
             );
 
-            printf("\nWorker %d can process %d lines", worker)
+            printf("\nWorker %d can process %d lines", worker);
         }
 
         // initialize matrix m1
