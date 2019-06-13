@@ -183,17 +183,8 @@ main(int argc, char **argv)
                     currentRowToProcess++;
                 }
 
-                // TODO - send batch to the worker
-                printf("\n\nENVIANDO BATCH PARA ESCRAVO\n");
-                printMatrix(rowsToProcess, SIZE, batchToProcess);
-                // MPI_Send(
-                //     &batchToProcess,                
-                //     rowsToProcess*SIZE,          
-                //     MPI_INT,            
-                //     availableWorkerId,           
-                //     PARTIAL_MATRIX_TAG,    
-                //     MPI_COMM_WORLD      
-                // ); 
+                // send batch to the worker
+                MPI_Send(&batchToProcess, rowsToProcess*SIZE, MPI_INT, availableWorkerId, PARTIAL_MATRIX_TAG, MPI_COMM_WORLD); 
 
                 // TODO - read the results and assemble the final matrix
                 // MPI_Recv(
@@ -220,22 +211,17 @@ main(int argc, char **argv)
         // inform the master its current host
         MPI_Send(&hostname, processor_buffer_length, MPI_CHAR, 0, HOST_DISCOVERY_TAG, MPI_COMM_WORLD);
 
-        // receive current capacity
+        // receive current capacity (determined by the master)
         MPI_Recv(&currentCapacity, 1, MPI_INT, 0, WORKER_CAPACITY_TAG, MPI_COMM_WORLD, &status);
-        printf("MINHA CAPACIDADE: %d", currentCapacity);
 
         // receive base matrix
-        MPI_Recv(
-            &m2,                
-            SIZE*SIZE,          
-            MPI_INT,            
-            0,                  
-            BASE_MATRIX_TAG,    
-            MPI_COMM_WORLD,     
-            &status             
-        );
+        MPI_Recv(&m2, SIZE*SIZE, MPI_INT, 0, BASE_MATRIX_TAG, MPI_COMM_WORLD, &status);
 
-        // TODO - receive partial matrix
+        // TODO - receive batch of rows to process
+        int partialMatrix[currentCapacity][SIZE];
+        MPI_Recv(&partialMatrix, currentCapacity*SIZE, MPI_INT, 0, PARTIAL_MATRIX_TAG, MPI_COMM_WORLD, &status);
+        printf("\n*** BATCH RECEIVED FROM MASTER");
+        printMatrix(currentCapacity, SIZE, partialMatrix);
         
         // TODO - multiply
 
