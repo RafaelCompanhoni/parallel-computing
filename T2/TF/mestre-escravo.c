@@ -86,8 +86,19 @@ main(int argc, char **argv)
         // send second matrix to slaves
         for (dest=1; dest<=proc_n; dest++)
         {
-            MPI_Send(&m2, SIZE*SIZE, MPI_INT, i, 1, MPI_COMM_WORLD); 
+            MPI_Send(
+                &m2,            // initial address of send buffer (choice)
+                SIZE*SIZE,      // number of elements in send buffer (nonnegative integer)
+                MPI_INT,        // datatype of each send buffer element (handle)
+                dest,           // rank of destination (integer)
+                1,              // message tag (integer)
+                MPI_COMM_WORLD  // communicator (handle)
+            ); 
         }
+
+        // TODO - 'spread' the first matrix rows to the workers
+
+        // TODO -- assemble the results
         
         /*
         MPI_Recv(&message,          // buffer onde será colocada a mensagem
