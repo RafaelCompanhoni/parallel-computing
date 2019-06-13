@@ -5,6 +5,12 @@
 // BASE_MATRIX_TAG = 2
 // PARTIAL_RESULT = 3
 
+struct workerInfo 
+{ 
+   char hostname[MPI_MAX_PROCESSOR_NAME],
+   bool isAvailable
+}; 
+
 void printMatrix(int matrix[SIZE][SIZE])
 {
     int i, j;
