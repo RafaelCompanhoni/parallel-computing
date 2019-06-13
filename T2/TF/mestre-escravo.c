@@ -143,7 +143,7 @@ main(int argc, char **argv)
         int processedRows = 0;
         do {
             // find an available worker
-            struct WorkerInfo availableWorker = null;
+            struct WorkerInfo availableWorker = NULL;
             for (workerId=1; workerId < workers_total; workerId++) {
                 if (workers[workerId].isAvailable) {
                     workers[workerId].isAvailable = 0;
@@ -152,7 +152,7 @@ main(int argc, char **argv)
                 }
             }
 
-            if (availableWorker != null) {
+            if (availableWorker != NULL) {
                 printf("WORKER AVAILABLE");
             } else {
                 printf("NO WORKER AVAILABLE");
