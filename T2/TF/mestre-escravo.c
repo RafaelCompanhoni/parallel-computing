@@ -8,17 +8,17 @@
 struct WorkerInfo 
 { 
    int workerId;
-   int lineCapacity;
+   int rowCapacity;
    int isAvailable;
 }; 
 
-void printMatrix(int matrix[SIZE][SIZE])
+void printMatrix(int rows, int columns, int matrix[rows][columns])
 {
     int i, j;
 
-    for (i = 0; i < SIZE; i++)
+    for (i = 0; i < rows; i++)
     {
-        for (j = 0; j < SIZE; j++)
+        for (j = 0; j < columns; j++)
         {
             printf("%d     ", matrix[i][j]);
         }
@@ -87,13 +87,13 @@ main(int argc, char **argv)
                 &status
             );
 
-            int lines = 16;
+            int lines = 2; // 16
             if(strcmp(workerHostname, hostname) == 0) {
-                lines = 15; // whenever the worker is at the same host as the master
+                lines = 1; // 15, whenever the worker is at the same host as the master
             }
 
             workers[workerId].workerId = workerId;
-            workers[workerId].lineCapacity = lines;
+            workers[workerId].rowCapacity = lines;
             workers[workerId].isAvailable = 1;
             printf("\nESCRAVO[%d] pode processar %d linhas", workerId, lines);
         }
@@ -140,20 +140,36 @@ main(int argc, char **argv)
         }
 
         // TODO - send lines and process results
-        int processedRows = 0;
+        int currentRowToProcess = 0;
         do {
             // find an available worker
-            int availableWorker = 0;
+            int availableWorkerId = 0;
             for (workerId=1; workerId < workers_total; workerId++) {
                 if (workers[workerId].isAvailable) {
                     workers[workerId].isAvailable = 0;
-                    availableWorker = workerId;
+                    availableWorkerId = workerId;
                     break;
                 }
             }
 
-            if (availableWorker) {
-                printf("ESCRAVO[%d] DISPONIVEL\n", availableWorker);
+            if (availableWorkerId) {
+                printf("ESCRAVO[%d] DISPONIVEL\n", availableWorkerId);
+                
+                int rowsToProcess = workers[availableWorkerId].rowCapacity;
+                int batchToProcess[rowsToProcess][SIZE];
+                int row;
+
+                // get next batch of lines from 'm1'
+                for (row = 0; row < rowsToProcess; row++) {
+                    batchToProcess[row] = m1[currentRowToProcess];
+                    currentRowToProcess++;
+                }
+
+                // TODO - send batch to the worker
+                printf("ENVIANDO BATCH PARA ESCRAVO\n");
+                printMatrix(rowsToProcess, SIZE, batchToProcess);
+
+                // TODO - read the results and assemble the final matrix
             } else {
                 printf("NENHUM ESCRAVO DISPONIVEL\n");
             }
@@ -173,7 +189,7 @@ main(int argc, char **argv)
             // );           
 
             processedRows++;
-        } while (processedRows < SIZE);
+        } while (currentRowToProcess < SIZE);
     }
     else
     {
