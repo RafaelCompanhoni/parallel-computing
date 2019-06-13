@@ -72,7 +72,7 @@ main(int argc, char **argv)
         int i, j, workerId;
         int k = 1;
         char workerHostname[processor_buffer_length];
-        WorkerInfo workers[workers_total];
+        struct WorkerInfo workers[workers_total];
 
         // determines how many lines each worker can process at a time
         for (workerId=1; workerId < workers_total; workerId++) {
