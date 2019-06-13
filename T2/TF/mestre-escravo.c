@@ -155,6 +155,7 @@ main(int argc, char **argv)
                 }
 
                 // send batch to the worker
+                printf("\n[MESTRE] - processando da linha %d até %d", currentRowToProcess, rowsToProcess);
                 MPI_Send(&batchToProcess, rowsToProcess*SIZE, MPI_INT, availableWorkerId, PARTIAL_MATRIX_TAG, MPI_COMM_WORLD); 
 
                 // get the results and flag the worker as available again
