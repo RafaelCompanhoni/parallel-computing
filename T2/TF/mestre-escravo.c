@@ -224,6 +224,7 @@ main(int argc, char **argv)
         printMatrix(currentCapacity, SIZE, partialMatrix);
         
         // TODO - multiply
+        int i, j, k;
         int partialResult[currentCapacity][SIZE];
         #pragma omp parallel for private(j, k) num_threads(currentCapacity)
         for (i = 0; i < currentCapacity; i++)
