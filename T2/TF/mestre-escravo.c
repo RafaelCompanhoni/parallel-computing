@@ -153,9 +153,9 @@ main(int argc, char **argv)
             }
 
             if (availableWorker) {
-                printf("WORKER AVAILABLE");
+                printf("WORKER AVAILABLE\n");
             } else {
-                printf("NO WORKER AVAILABLE");
+                printf("NO WORKER AVAILABLE\n");
             }
 
             // 1. get next batch of lines from 'm1'
