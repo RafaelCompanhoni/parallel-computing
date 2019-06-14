@@ -140,7 +140,7 @@ main(int argc, char **argv)
 
             int amount_received;
             MPI_Get_count(&status, MPI_INT, &amount_received);
-            printf("[ESCRAVO-%d] - recebido batch para processar -- tamanho \n", my_rank, amount_received);
+            printf("[ESCRAVO-%d] - recebido batch para processar -- tamanho %d\n", my_rank, amount_received);
 
             // TODO - stop condition
             printMatrix(workerCapacity, SIZE, batch_to_process);
