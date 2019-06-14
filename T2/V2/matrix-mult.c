@@ -106,6 +106,8 @@ main(int argc, char **argv)
             currentRowToProcess += worker_requester_capacity;
             printf("[MESTRE] - processado %d de %d\n", currentRowToProcess, SIZE);
         } while(currentRowToProcess < SIZE);
+
+        printf("[MESTRE] - encerrando\n");
     }
     else
     {
