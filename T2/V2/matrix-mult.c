@@ -28,9 +28,6 @@ main(int argc, char **argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank); 
     MPI_Comm_size(MPI_COMM_WORLD, &workers_total);  
 
-    // space between logs
-    printf("\n");
-
     // master sends its hostname to all workers (this same BCast call is used by both master and slaves)
     if (my_rank == 0) {
         MPI_Get_processor_name(masterHostname, &processor_buffer_length); 
