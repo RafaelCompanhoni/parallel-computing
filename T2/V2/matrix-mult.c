@@ -84,13 +84,13 @@ main(int argc, char **argv)
         }
 
         int worker_requester_capacity;
-        int linesToProcess = 10;
         int currentRowToProcess = 0; // TODO
         do {
             // worker request for batch
             MPI_Recv(&worker_requester_capacity, 1, MPI_INT, MPI_ANY_SOURCE, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &status);
             printf("[MESTRE] - recebi pedido de batch do escravo[%d] que pode processar %d threads\n", status.MPI_SOURCE, worker_requester_capacity);
 
+            // extract batch from m1 
             int batchToProcess[worker_requester_capacity][SIZE];
             for (row = 0; row < worker_requester_capacity; row++) {
                 for (column = 0; column < SIZE; column++) {
@@ -98,9 +98,11 @@ main(int argc, char **argv)
                 }
             }
 
+            // send batch to worker
             MPI_Send(&batchToProcess, worker_requester_capacity*SIZE, MPI_INT, status.MPI_SOURCE, RESPONSE_BATCH_TAG, MPI_COMM_WORLD); 
 
-            linesToProcess--;
+            // update index for next iteration
+            currentRowToProcess += worker_requester_capacity;
         } while(linesToProcess > 0);
     }
     else
@@ -114,7 +116,7 @@ main(int argc, char **argv)
         printf("[ESCRAVO-%d] - eu estou no host %s\n", my_rank, workerHostname);
 
         // determines how many threads it can process by comparing its own hostname with the master's
-        int workerCapacity = 2;
+        int workerCapacity = 1;
         if(strcmp(workerHostname, masterHostname) == 0) {
             workerCapacity = 1;
         }
