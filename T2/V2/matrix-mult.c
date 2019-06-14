@@ -118,7 +118,7 @@ main(int argc, char **argv)
             printf("[ESCRAVO-%d] - requisitando batch\n", my_rank);
             MPI_Send(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD);
             shouldRequest++; 
-        } while (shouldRequest < 5);
+        } while (shouldRequest <= 5);
     }
 
     MPI_Finalize();
