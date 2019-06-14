@@ -67,7 +67,7 @@ main(int argc, char **argv)
             for (row = 0; row < SIZE; row++)
             {
                 if (value % 2 == 0)
-                    bse_matrix[row][column] = -value;
+                    base_matrix[row][column] = -value;
                 else
                     base_matrix[row][column] = value;
             }
@@ -96,7 +96,7 @@ main(int argc, char **argv)
         }
         printf("[ESCRAVO-%d] - posso processar %d threads\n", my_rank, processableThreads);
 
-        MPI_Recv(&base_matrix, SIZE*SIZE, MPI_INT, 0, BASE_MATRIX_TAG, MPI_COMM_WORLD, &status);
+        MPI_Recv(&base_matrix, SIZE*SIZE, MPI_INT, 0, BASE_MATRIX_TAG, MPI_COMM_WORLD);
         printf("[ESCRAVO-%d] - recebi a matriz base\n", my_rank);
         printMatrix(SIZE, SIZE, base_matrix);
     }
