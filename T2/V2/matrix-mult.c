@@ -129,25 +129,29 @@ main(int argc, char **argv)
         printMatrix(SIZE, SIZE, base_matrix);
 
         // main loop: requests batches from the master no more data is returned
-        int should_request = 1;
+        int request_completed = 1;
         int batch_to_process[workerCapacity][SIZE];
-        do {
+        while(request_completed) {
+            MPI_Request request;
+
             // requests batch from the master
-            printf("[ESCRAVO-%d] - requisitando batch (%d)\n", my_rank, should_request);
-            MPI_Isend(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD);
+            printf("[ESCRAVO-%d] - requisitando batch\n", my_rank);
+            MPI_Isend(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &request);
+
+            MPI_Test(&request, &request_completed, MPI_STATUS_IGNORE);
+            if (!request_completed) {
+                break;
+            }
 
             // receives batch from the master
-            MPI_Recv(&batch_to_process, workerCapacity*SIZE, MPI_INT, 0, RESPONSE_BATCH_TAG, MPI_COMM_WORLD, &status);
-
-            int amount_received;
-            MPI_Get_count(&status, MPI_INT, &amount_received);
-            printf("[ESCRAVO-%d] - recebido batch para processar -- tamanho %d\n", my_rank, amount_received);
+            MPI_Recv(&batch_to_process, workerCapacity*SIZE, MPI_INT, 0, RESPONSE_BATCH_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            printf("[ESCRAVO-%d] - recebido batch para processar -- tamanho %d\n", my_rank);
 
             // TODO - stop condition
             printMatrix(workerCapacity, SIZE, batch_to_process);
 
             should_request++; 
-        } while (should_request <= 5);
+        }
     }
 
     MPI_Finalize();
