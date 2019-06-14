@@ -19,7 +19,9 @@ main(int argc, char **argv)
 {
     int my_rank;                                    // process identifier
     int workers_total;                              // total amount of workers
-    char masterHostname[MPI_MAX_PROCESSOR_NAME];    // host where the master process is currently running on
+
+    int processor_buffer_length = MPI_MAX_PROCESSOR_NAME;  
+    char masterHostname[processor_buffer_length];    // host where the master process is currently running on
 
     // MPI initialization
     MPI_Init(&argc, &argv); 
@@ -27,7 +29,7 @@ main(int argc, char **argv)
     MPI_Comm_size(MPI_COMM_WORLD, &workers_total);  
 
     // master sends its hostname to all workers (this same BCast call is used by both master and slaves)
-    MPI_Get_processor_name(masterHostname, &MPI_MAX_PROCESSOR_NAME); 
+    MPI_Get_processor_name(masterHostname, &processor_buffer_length); 
     MPI_Bcast(&masterHostname, 1, MPI_CHAR, 0, MPI_COMM_WORLD);
 
     if (my_rank == 0)
