@@ -58,7 +58,7 @@ echo ################
 
 ############# Command example, if using MPI
 
-mpirun -np 3 mestre-escravo
+mpirun -np 3 matrix-mult
 
 ################
 
