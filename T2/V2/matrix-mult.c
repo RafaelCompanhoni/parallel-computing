@@ -27,7 +27,7 @@ main(int argc, char **argv)
     MPI_Comm_size(MPI_COMM_WORLD, &workers_total);  
 
     // master sends its hostname to all workers (this same BCast call is used by both master and slaves)
-    MPI_Get_processor_name(hostname, &MPI_MAX_PROCESSOR_NAME); 
+    MPI_Get_processor_name(masterHostname, &MPI_MAX_PROCESSOR_NAME); 
     MPI_Bcast(&masterHostname, 1, MPI_CHAR, 0, MPI_COMM_WORLD);
 
     if (my_rank == 0)
