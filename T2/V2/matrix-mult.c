@@ -103,7 +103,7 @@ main(int argc, char **argv)
 
             // update index for next iteration
             currentRowToProcess += worker_requester_capacity;
-        } while(linesToProcess > 0);
+        } while(currentRowToProcess < SIZE);
     }
     else
     {
