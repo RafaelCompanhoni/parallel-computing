@@ -149,15 +149,19 @@ main(int argc, char **argv)
             }
 
             // receives batch from the master
-            MPI_Irecv(&batch_to_process, workerCapacity*SIZE, MPI_INT, 0, RESPONSE_BATCH_TAG, MPI_COMM_WORLD, &r_response_batch);
-            MPI_Test(&r_response_batch, &response_batch_completed, MPI_STATUS_IGNORE);
-            if (!response_batch_completed) {
-                printf("[ESCRAVO-%d] - finalizando processamento (RESPONSE_BATCH_TAG)\n", my_rank);
-                break;
-            } else {
-                printf("[ESCRAVO-%d] - recebido batch para processar\n", my_rank);
-                printMatrix(workerCapacity, SIZE, batch_to_process);
-            }
+            MPI_Recv(&batch_to_process, workerCapacity*SIZE, MPI_INT, 0, RESPONSE_BATCH_TAG, MPI_COMM_WORLD, &status);
+            printf("[ESCRAVO-%d] - recebido batch para processar\n", my_rank);
+            printMatrix(workerCapacity, SIZE, batch_to_process);
+
+            // MPI_Irecv(&batch_to_process, workerCapacity*SIZE, MPI_INT, 0, RESPONSE_BATCH_TAG, MPI_COMM_WORLD, &r_response_batch);
+            // MPI_Test(&r_response_batch, &response_batch_completed, MPI_STATUS_IGNORE);
+            // if (!response_batch_completed) {
+            //     printf("[ESCRAVO-%d] - finalizando processamento (RESPONSE_BATCH_TAG)\n", my_rank);
+            //     break;
+            // } else {
+            //     printf("[ESCRAVO-%d] - recebido batch para processar\n", my_rank);
+            //     printMatrix(workerCapacity, SIZE, batch_to_process);
+            // }
         }
     }
 
