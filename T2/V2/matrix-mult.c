@@ -89,6 +89,8 @@ main(int argc, char **argv)
             printf("[MESTRE] - recebi pedido de batch do escravo[%d]\n", status.MPI_SOURCE);
             linesToProcess--;
         } while(linesToProcess > 0);
+
+        MPI_Finalize();
     }
     else
     {
@@ -120,6 +122,4 @@ main(int argc, char **argv)
             shouldRequest++; 
         } while (shouldRequest < 5);
     }
-
-    MPI_Finalize();
 }
