@@ -17,11 +17,16 @@ void printMatrix(int rows, int columns, int matrix[rows][columns])
 
 main(int argc, char **argv)
 {
-    int my_rank;                                    // process identifier
-    int workers_total;                              // total amount of workers
+    // types of messages (protocol)
+    int const BASE_MATRIX_TAG = 1;
 
+    int my_rank;                        // process identifier
+    int workers_total;                  // total amount of workers
+    int base_matrix[SIZE][SIZE];        // base matrix
+
+    // host where the master process is currently running on
     int processor_buffer_length = MPI_MAX_PROCESSOR_NAME;  
-    char masterHostname[processor_buffer_length];    // host where the master process is currently running on
+    char masterHostname[processor_buffer_length];    
 
     // MPI initialization
     MPI_Init(&argc, &argv); 
@@ -37,13 +42,46 @@ main(int argc, char **argv)
     if (my_rank == 0)
     {
         /**************** MASTER ****************/
+        int row, column, workerId;
+        int value = 1;
+        int m1[SIZE][SIZE], mres[SIZE][SIZE];
+
         printf("[MASTER] - executado no host %s\n", masterHostname);
+
+        // initialize matrixes
+        for (row = 0; row < SIZE; row++)
+        {
+            for (column = 0; column < SIZE; column++)
+            {
+                if (value % 2 == 0)
+                    m1[row][column] = -value;
+                else
+                    m1[row][column] = value;
+            }
+            value++;
+        }
+        
+        value = 1;
+        for (column = 0; column < SIZE; column++)
+        {
+            for (row = 0; i < SIZE; row++)
+            {
+                if (k % 2 == 0)
+                    base_matrix[row][column] = -value;
+                else
+                    base_matrix[row][column] = value;
+            }
+            value++;
+        }
+
+        for (workerId=1; workerId < workers_total; workerId++)
+        {
+            MPI_Send(&m2, SIZE*SIZE, MPI_INT, workerId, BASE_MATRIX_TAG, MPI_COMM_WORLD); 
+        }
     }
     else
     {
         /**************** WORKER ****************/
-        
-
         printf("[ESCRAVO-%d] - mestre executado no host %s\n", my_rank, masterHostname);
 
         // gets the worker hostname
@@ -57,6 +95,10 @@ main(int argc, char **argv)
             processableThreads = 15;
         }
         printf("[ESCRAVO-%d] - posso processar %d threads\n", my_rank, processableThreads);
+
+        MPI_Recv(&base_matrix, SIZE*SIZE, MPI_INT, 0, BASE_MATRIX_TAG, MPI_COMM_WORLD, &status);
+        printf("[ESCRAVO-%d] - recebi a matriz base\n", my_rank);
+        printMatrix(SIZE, SIZE, base_matrix);
     }
 
     MPI_Finalize();
