@@ -84,11 +84,10 @@ main(int argc, char **argv)
 
         int worker_requester_capacity;
         int linesToProcess = 10;
-        do {
-            MPI_Recv(&worker_requester_capacity, 1, MPI_INT, MPI_ANY_SOURCE, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &status);
-            printf("[MESTRE] - recebi pedido de batch do escravo[%d]\n", status.MPI_SOURCE);
-            linesToProcess--;
-        } while(linesToProcess > 0);
+
+        MPI_Recv(&worker_requester_capacity, 1, MPI_INT, MPI_ANY_SOURCE, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &status);
+        printf("[MESTRE] - recebi pedido de batch do escravo[%d]\n", status.MPI_SOURCE);
+        linesToProcess--;
     }
     else
     {
