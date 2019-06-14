@@ -83,8 +83,12 @@ main(int argc, char **argv)
         }
 
         int worker_requester_capacity;
-        MPI_Recv(&worker_requester_capacity, SIZE*SIZE, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &status);
-        printf("[MESTRE] - recebi pedido de batch do escravo[%d]", status.MPI_SOURCE);
+        int linesToProcess = 5;
+        do {
+            MPI_Recv(&worker_requester_capacity, SIZE*SIZE, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &status);
+            printf("[MESTRE] - recebi pedido de batch do escravo[%d]\n", status.MPI_SOURCE);
+            linesToProcess--;
+        } while(linesToProcess > 0);
     }
     else
     {
@@ -111,6 +115,7 @@ main(int argc, char **argv)
         // main loop: requests the master for batches until no more data is available for processing
         int shouldRequest = 1;
         do {
+            printf("[ESCRAVO-%d] - requisitando batch\n", my_rank);
             MPI_Send(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD);
             shouldRequest++; 
         } while (shouldRequest < 5);
