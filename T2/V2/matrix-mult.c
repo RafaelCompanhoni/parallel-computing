@@ -94,7 +94,7 @@ main(int argc, char **argv)
             int batchToProcess[worker_requester_capacity][SIZE];
             for (row = 0; row < worker_requester_capacity; row++) {
                 for (column = 0; column < SIZE; column++) {
-                    batchToProcess[row][column] = m1[currentRowToProcess][column];
+                    batchToProcess[row][column] = m1[row + currentRowToProcess][column];
                 }
             }
 
