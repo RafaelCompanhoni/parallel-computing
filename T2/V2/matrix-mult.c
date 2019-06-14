@@ -84,28 +84,28 @@ main(int argc, char **argv)
             MPI_Send(&base_matrix, SIZE*SIZE, MPI_INT, workerId, BASE_MATRIX_TAG, MPI_COMM_WORLD); 
         }
 
-        int worker_requester_capacity;
         int currentRowToProcess = 0; // TODO
-        do {
+        while((currentRowToProcess < SIZE)) {
             // worker request for batch
-            MPI_Recv(&worker_requester_capacity, 1, MPI_INT, MPI_ANY_SOURCE, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &status);
-            printf("[MESTRE] - recebi pedido de batch do escravo[%d] que pode processar %d threads\n", status.MPI_SOURCE, worker_requester_capacity);
+            int batchSize;
+            MPI_Recv(&batchSize, 1, MPI_INT, MPI_ANY_SOURCE, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &status);
+            printf("[MESTRE] - recebi pedido de batch do escravo[%d] que pode processar %d threads\n", status.MPI_SOURCE, batchSize);
 
             // extract batch from m1 
-            int batchToProcess[worker_requester_capacity][SIZE];
-            for (row = 0; row < worker_requester_capacity; row++) {
+            int batchToProcess[batchSize][SIZE];
+            for (row = 0; row < batchSize; row++) {
                 for (column = 0; column < SIZE; column++) {
                     batchToProcess[row][column] = m1[row + currentRowToProcess][column];
                 }
             }
 
             // send batch to worker
-            MPI_Send(&batchToProcess, worker_requester_capacity*SIZE, MPI_INT, status.MPI_SOURCE, RESPONSE_BATCH_TAG, MPI_COMM_WORLD); 
+            MPI_Send(&batchToProcess, batchSize*SIZE, MPI_INT, status.MPI_SOURCE, RESPONSE_BATCH_TAG, MPI_COMM_WORLD); 
 
             // update index for next iteration
-            currentRowToProcess += worker_requester_capacity;
+            currentRowToProcess += batchSize;
             printf("[MESTRE] - processado %d de %d\n", currentRowToProcess, SIZE);
-        } while(currentRowToProcess < SIZE);
+        }
 
         printf("[MESTRE] - encerrando\n");
     }
@@ -144,8 +144,6 @@ main(int argc, char **argv)
             if (!request_completed) {
                 printf("[ESCRAVO-%d] - finalizando processamento (REQUEST_BATCH_TAG)\n", my_rank);
                 break;
-            } else {
-                printf("[ESCRAVO-%d] - requisição enviada\n", my_rank);
             }
 
             // receives batch from the master
