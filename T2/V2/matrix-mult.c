@@ -32,7 +32,7 @@ main(int argc, char **argv)
     if (my_rank == 0) {
         MPI_Get_processor_name(masterHostname, &processor_buffer_length); 
     }
-    MPI_Bcast(&masterHostname, 1, MPI_CHAR, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&masterHostname, processor_buffer_length, MPI_CHAR, 0, MPI_COMM_WORLD);
 
     if (my_rank == 0)
     {
