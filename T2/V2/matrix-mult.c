@@ -143,8 +143,10 @@ main(int argc, char **argv)
 
             MPI_Test(&request, &request_completed, MPI_STATUS_IGNORE);
             if (!request_completed) {
-                printf("[ESCRAVO-%d] -finalizando processamento\n", my_rank);
+                printf("[ESCRAVO-%d] - finalizando processamento\n", my_rank);
                 break;
+            } else {
+                printf("[ESCRAVO-%d] - requisição enviada\n", my_rank);
             }
 
             // receives batch from the master
