@@ -37,14 +37,20 @@ main(int argc, char **argv)
     if (my_rank == 0)
     {
         /**************** MASTER ****************/
-
         printf("\n[MASTER] - executado no host %s\n", masterHostname);
     }
     else
     {
         /**************** WORKER ****************/
+        printf("\n[ESCRAVO-%d] - mestre executado no host %s\n", my_rank, masterHostname);
 
-        printf("\n[ESCRAVO-%d] - executado no host %s\n", my_rank, masterHostname);
+        // gets the slave hostname
+        char slaveHostname[processor_buffer_length];
+        MPI_Get_processor_name(slaveHostname, &processor_buffer_length);
+        printf("\n[ESCRAVO-%d] - executado no host %s\n", my_rank, slaveHostname);
+
+        // determines how many threads it can process by comparing its own hostname with the master's
+        // TODO 
     }
 
     MPI_Finalize();
