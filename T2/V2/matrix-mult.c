@@ -130,7 +130,7 @@ main(int argc, char **argv)
         int batch_to_process[workerCapacity][SIZE];
         do {
             // requests batch from the master
-            printf("[ESCRAVO-%d] - requisitando batch (\n", my_rank);
+            printf("[ESCRAVO-%d] - requisitando batch (%d)\n", my_rank, should_request);
             MPI_Send(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD);
 
             // receives batch from the master
