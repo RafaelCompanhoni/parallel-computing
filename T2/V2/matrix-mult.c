@@ -64,10 +64,10 @@ main(int argc, char **argv)
         value = 1;
         for (column = 0; column < SIZE; column++)
         {
-            for (row = 0; i < SIZE; row++)
+            for (row = 0; row < SIZE; row++)
             {
-                if (k % 2 == 0)
-                    base_matrix[row][column] = -value;
+                if (value % 2 == 0)
+                    bse_matrix[row][column] = -value;
                 else
                     base_matrix[row][column] = value;
             }
@@ -76,7 +76,7 @@ main(int argc, char **argv)
 
         for (workerId=1; workerId < workers_total; workerId++)
         {
-            MPI_Send(&m2, SIZE*SIZE, MPI_INT, workerId, BASE_MATRIX_TAG, MPI_COMM_WORLD); 
+            MPI_Send(&base_matrix, SIZE*SIZE, MPI_INT, workerId, BASE_MATRIX_TAG, MPI_COMM_WORLD); 
         }
     }
     else
