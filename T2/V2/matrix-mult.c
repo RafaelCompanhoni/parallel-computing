@@ -139,7 +139,7 @@ main(int argc, char **argv)
             printMatrix(workerCapacity, SIZE, batch_to_process);
 
             should_request++; 
-        } while (shouldRequest <= 5);
+        } while (should_request <= 5);
     }
 
     MPI_Finalize();
