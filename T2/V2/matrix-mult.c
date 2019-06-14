@@ -140,6 +140,7 @@ main(int argc, char **argv)
 
             MPI_Test(&request, &request_completed, MPI_STATUS_IGNORE);
             if (!request_completed) {
+                printf("[ESCRAVO-%d] -finalizando processamento\n", my_rank);
                 break;
             }
 
