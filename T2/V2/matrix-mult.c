@@ -30,6 +30,7 @@ main(int argc, char **argv)
     int const BASE_MATRIX_TAG = 1;
     int const REQUEST_BATCH_TAG = 2;
     int const RESPONSE_BATCH_TAG = 3;
+    int const FINISH_TAG = 4;
 
     // MPI initialization
     MPI_Init(&argc, &argv); 
@@ -78,7 +79,7 @@ main(int argc, char **argv)
         }
 
         // sends the base matrix to all workers
-        for (workerId=1; workerId < workers_total; workerId++)
+        for (workerId = 1; workerId < workers_total; workerId++)
         {
             MPI_Send(&base_matrix, SIZE*SIZE, MPI_INT, workerId, BASE_MATRIX_TAG, MPI_COMM_WORLD); 
         }
@@ -133,7 +134,7 @@ main(int argc, char **argv)
         do {
             // requests batch from the master
             printf("[ESCRAVO-%d] - requisitando batch (%d)\n", my_rank, should_request);
-            MPI_Send(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD);
+            MPI_Isend(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD);
 
             // receives batch from the master
             MPI_Recv(&batch_to_process, workerCapacity*SIZE, MPI_INT, 0, RESPONSE_BATCH_TAG, MPI_COMM_WORLD, &status);
