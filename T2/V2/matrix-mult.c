@@ -104,7 +104,7 @@ main(int argc, char **argv)
 
             // update index for next iteration
             currentRowToProcess += worker_requester_capacity;
-            printf("[MESTRE] - processado %d de %d", currentRowToProcess, SIZE);
+            printf("[MESTRE] - processado %d de %d\n", currentRowToProcess, SIZE);
         } while(currentRowToProcess < SIZE);
     }
     else
