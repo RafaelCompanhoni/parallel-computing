@@ -59,15 +59,7 @@ main(int argc, char **argv)
 
         // determines how many lines each worker can process at a time
         for (workerId=1; workerId < workers_total; workerId++) {
-            MPI_Recv(
-                workerHostname,                
-                processor_buffer_length,        
-                MPI_CHAR,            
-                workerId,              
-                HOST_DISCOVERY_TAG,
-                MPI_COMM_WORLD,
-                &status
-            );
+            MPI_Recv(workerHostname, processor_buffer_length, MPI_CHAR, workerId, HOST_DISCOVERY_TAG, MPI_COMM_WORLD, &status);
 
             int rows = 2; // 16
             if(strcmp(workerHostname, hostname) == 0) {
@@ -80,14 +72,7 @@ main(int argc, char **argv)
             printf("\nESCRAVO[%d] pode processar %d linhas", workerId, rows);
 
             // informs the worker how many rows it can process
-            MPI_Send(
-                &rows,                
-                1,          
-                MPI_INT,            
-                workerId,           
-                WORKER_CAPACITY_TAG,    
-                MPI_COMM_WORLD      
-            ); 
+            MPI_Send(&rows, 1, MPI_INT, workerId, WORKER_CAPACITY_TAG, MPI_COMM_WORLD); 
         }
 
         // initialize matrix m1
@@ -125,7 +110,7 @@ main(int argc, char **argv)
             MPI_Send(&m2, SIZE*SIZE, MPI_INT, workerId, BASE_MATRIX_TAG, MPI_COMM_WORLD); 
         }
 
-        // TODO - send lines and process results
+        // send rows and process results
         int currentRowToProcess = 0;
         do {
             // find an available worker
