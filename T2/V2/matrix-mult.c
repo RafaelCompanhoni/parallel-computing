@@ -83,7 +83,7 @@ main(int argc, char **argv)
         }
 
         int worker_requester_capacity;
-        MPI_Recv(&worker_requester_capacity, SIZE*SIZE, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE, &status);
+        MPI_Recv(&worker_requester_capacity, SIZE*SIZE, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &status);
         printf("[MESTRE] - recebi pedido de batch do escravo[%d]", status.MPI_SOURCE);
     }
     else
@@ -113,7 +113,7 @@ main(int argc, char **argv)
         do {
             MPI_Send(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD);
             shouldRequest++; 
-        } while (shouldRequest < 5)
+        } while (shouldRequest < 5);
     }
 
     MPI_Finalize();
