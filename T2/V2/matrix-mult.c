@@ -31,6 +31,7 @@ main(int argc, char **argv)
     int const REQUEST_BATCH_TAG = 2;
     int const RESPONSE_BATCH_TAG = 3;
     int const FINISH_TAG = 4;
+    int const STOP_CONDITION_TAG = 5;
 
     // MPI initialization
     MPI_Init(&argc, &argv); 
@@ -84,8 +85,18 @@ main(int argc, char **argv)
             MPI_Send(&base_matrix, SIZE*SIZE, MPI_INT, workerId, BASE_MATRIX_TAG, MPI_COMM_WORLD); 
         }
 
-        int currentRowToProcess = 0; // TODO
-        while((currentRowToProcess < SIZE)) {
+        int currentRowToProcess = 0;
+        while(currentRowToProcess < SIZE) {
+            // sends the stop condition for the workers
+            for (workerId = 1; workerId < workers_total; workerId++)
+            {
+                int doWork = 1;
+                if (currentRowToProcess < SIZE) {
+                    doWork = 0;
+                }
+                MPI_Send(&doWork, 1, MPI_INT, workerId, STOP_CONDITION_TAG, MPI_COMM_WORLD); 
+            }
+
             // worker request for batch
             int batchSize;
             MPI_Recv(&batchSize, 1, MPI_INT, MPI_ANY_SOURCE, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &status);
@@ -132,23 +143,33 @@ main(int argc, char **argv)
         printMatrix(SIZE, SIZE, base_matrix);
 
         // main loop: requests batches from the master no more data is returned
-        int request_batch_completed = 1;
-        int response_batch_completed = 1;
-        int batch_to_process[workerCapacity][SIZE];
-        while(request_batch_completed && response_batch_completed) {
-            MPI_Request r_request_batch;
-            MPI_Request r_response_batch;
+        // int request_batch_completed = 1;
+        // int response_batch_completed = 1;
+        int doWork = 1;
+        while(doWork) {
+            // MPI_Request r_request_batch;
+            // MPI_Request r_response_batch;
+
+            // checks the stop condition
+            MPI_Recv(&doWork, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            if (!doWork) {
+                printf("[ESCRAVO-%d] - encerrando\n", my_rank);
+                break;    
+            }
 
             // requests batch from the master
             printf("[ESCRAVO-%d] - requisitando batch\n", my_rank);
-            MPI_Isend(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &r_request_batch);
-            MPI_Test(&r_request_batch, &request_batch_completed, MPI_STATUS_IGNORE);
-            if (!request_batch_completed) {
-                printf("[ESCRAVO-%d] - finalizando processamento (REQUEST_BATCH_TAG)\n", my_rank);
-                break;
-            }
+            MPI_Send(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD);
+
+            // MPI_Isend(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &r_request_batch);
+            // MPI_Test(&r_request_batch, &request_batch_completed, MPI_STATUS_IGNORE);
+            // if (!request_batch_completed) {
+            //     printf("[ESCRAVO-%d] - finalizando processamento (REQUEST_BATCH_TAG)\n", my_rank);
+            //     break;
+            // }
 
             // receives batch from the master
+            int batch_to_process[workerCapacity][SIZE];
             MPI_Recv(&batch_to_process, workerCapacity*SIZE, MPI_INT, 0, RESPONSE_BATCH_TAG, MPI_COMM_WORLD, &status);
             printf("[ESCRAVO-%d] - recebido batch para processar\n", my_rank);
             printMatrix(workerCapacity, SIZE, batch_to_process);
