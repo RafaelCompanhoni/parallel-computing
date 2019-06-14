@@ -84,14 +84,15 @@ main(int argc, char **argv)
         }
 
         int worker_requester_capacity;
-        int currentRowToProcess = 0;
+        int linesToProcess = 10;
+        int currentRowToProcess = 0; // TODO
         do {
             // worker request for batch
             MPI_Recv(&worker_requester_capacity, 1, MPI_INT, MPI_ANY_SOURCE, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &status);
             printf("[MESTRE] - recebi pedido de batch do escravo[%d] que pode processar %d threads\n", status.MPI_SOURCE, worker_requester_capacity);
 
             int batchToProcess[worker_requester_capacity][SIZE];
-            for (row = 0; row < rowsToProcess; row++) {
+            for (row = 0; row < worker_requester_capacity; row++) {
                 for (column = 0; column < SIZE; column++) {
                     batchToProcess[row][column] = m1[currentRowToProcess][column];
                 }
