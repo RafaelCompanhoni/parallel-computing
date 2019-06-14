@@ -136,8 +136,13 @@ main(int argc, char **argv)
             MPI_Send(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD);
 
             // receives batch from the master
-            MPI_Recv(&batch_to_process, workerCapacity*SIZE, MPI_INT, 0, RESPONSE_BATCH_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            printf("[ESCRAVO-%d] - recebido batch para processar\n", my_rank);
+            MPI_Recv(&batch_to_process, workerCapacity*SIZE, MPI_INT, 0, RESPONSE_BATCH_TAG, MPI_COMM_WORLD, &status);
+
+            int amount_received;
+            MPI_Get_count(&status, MPI_INT, &amount_received);
+            printf("[ESCRAVO-%d] - recebido batch para processar -- tamanho \n", my_rank, amount_received);
+
+            // TODO - stop condition
             printMatrix(workerCapacity, SIZE, batch_to_process);
 
             should_request++; 
