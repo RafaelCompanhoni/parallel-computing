@@ -96,7 +96,7 @@ main(int argc, char **argv)
         }
         printf("[ESCRAVO-%d] - posso processar %d threads\n", my_rank, processableThreads);
 
-        MPI_Recv(&base_matrix, SIZE*SIZE, MPI_INT, 0, BASE_MATRIX_TAG, MPI_COMM_WORLD);
+        MPI_Recv(&base_matrix, SIZE*SIZE, MPI_INT, 0, BASE_MATRIX_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         printf("[ESCRAVO-%d] - recebi a matriz base\n", my_rank);
         printMatrix(SIZE, SIZE, base_matrix);
     }
