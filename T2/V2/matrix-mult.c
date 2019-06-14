@@ -91,10 +91,12 @@ main(int argc, char **argv)
             for (workerId = 1; workerId < workers_total; workerId++)
             {
                 int doWork = 1;
-                if (currentRowToProcess < SIZE) {
+                if (currentRowToProcess == SIZE) {
+                    printf("[MESTRE] - enviando mensagem para encerrar escravos\n");
                     doWork = 0;
                 }
                 MPI_Send(&doWork, 1, MPI_INT, workerId, STOP_CONDITION_TAG, MPI_COMM_WORLD); 
+                break;
             }
 
             // worker request for batch
