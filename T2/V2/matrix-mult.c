@@ -17,16 +17,18 @@ void printMatrix(int rows, int columns, int matrix[rows][columns])
 
 main(int argc, char **argv)
 {
-    // types of messages (protocol)
-    int const BASE_MATRIX_TAG = 1;
-
     int my_rank;                        // process identifier
     int workers_total;                  // total amount of workers
     int base_matrix[SIZE][SIZE];        // base matrix
+    MPI_Status status;                  // communication status
 
     // host where the master process is currently running on
     int processor_buffer_length = MPI_MAX_PROCESSOR_NAME;  
     char masterHostname[processor_buffer_length];    
+
+    // types of messages (protocol)
+    int const BASE_MATRIX_TAG = 1;
+    int const REQUEST_BATCH_TAG = 2;
 
     // MPI initialization
     MPI_Init(&argc, &argv); 
@@ -46,7 +48,7 @@ main(int argc, char **argv)
         int value = 1;
         int m1[SIZE][SIZE], mres[SIZE][SIZE];
 
-        printf("[MASTER] - executado no host %s\n", masterHostname);
+        printf("[MESTRE] - eu estou no host %s\n", masterHostname);
 
         // initialize matrixes
         for (row = 0; row < SIZE; row++)
@@ -74,10 +76,15 @@ main(int argc, char **argv)
             value++;
         }
 
+        // sends the base matrix to all workers
         for (workerId=1; workerId < workers_total; workerId++)
         {
             MPI_Send(&base_matrix, SIZE*SIZE, MPI_INT, workerId, BASE_MATRIX_TAG, MPI_COMM_WORLD); 
         }
+
+        int worker_requester_capacity;
+        MPI_Recv(&worker_requester_capacity, SIZE*SIZE, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE, &status);
+        printf("[MESTRE] - recebi pedido de batch do escravo[%d]", status.MPI_SOURCE);
     }
     else
     {
@@ -90,15 +97,23 @@ main(int argc, char **argv)
         printf("[ESCRAVO-%d] - eu estou no host %s\n", my_rank, workerHostname);
 
         // determines how many threads it can process by comparing its own hostname with the master's
-        int processableThreads = 16;
+        int workerCapacity = 16;
         if(strcmp(workerHostname, masterHostname) == 0) {
-            processableThreads = 15;
+            workerCapacity = 15;
         }
-        printf("[ESCRAVO-%d] - posso processar %d threads\n", my_rank, processableThreads);
+        printf("[ESCRAVO-%d] - posso processar %d threads\n", my_rank, workerCapacity);
 
+        // receives the base matrix
         MPI_Recv(&base_matrix, SIZE*SIZE, MPI_INT, 0, BASE_MATRIX_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         printf("[ESCRAVO-%d] - recebi a matriz base\n", my_rank);
         printMatrix(SIZE, SIZE, base_matrix);
+
+        // main loop: requests the master for batches until no more data is available for processing
+        int shouldRequest = 1;
+        do {
+            MPI_Send(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD);
+            shouldRequest++; 
+        } while (shouldRequest < 5)
     }
 
     MPI_Finalize();
