@@ -104,31 +104,26 @@ main(int argc, char **argv)
             // send batch to worker
             MPI_Send(&batchToProcess, batchSize*SIZE, MPI_INT, status.MPI_SOURCE, RESPONSE_BATCH_TAG, MPI_COMM_WORLD); 
 
-            // receives partial result from worker
+            // receives partial result from worker and updates the final result
             int partialResult[batchSize][SIZE];
             MPI_Recv(&partialResult, batchSize*SIZE, MPI_INT, status.MPI_SOURCE, PARTIAL_RESULT_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            printf("[MESTRE] - recebido resultado parcial de escravo[%d]\n", status.MPI_SOURCE);
-
             for (row = 0; row < batchSize; row++) {
                 for (column = 0; column < SIZE; column++) {
                     mres[row + currentRowToProcess][column] = partialResult[row][column];
                 }
             }
+            printf("[MESTRE] - processado %d de %d\n", currentRowToProcess, SIZE);
 
             // update index for next iteration
             currentRowToProcess += batchSize;
 
-            // send stop condition to all workers
+            // send stop condition
             int stopWorker = 0;
             if (currentRowToProcess == SIZE) {
-                printf("[MESTRE] - enviando mensagem de encerramento a todos os escravos\n");
+                printf("[MESTRE] - enviando mensagem de encerramento ao escravo[%d]\n", status.MPI_SOURCE);
                 stopWorker = 1;
             }
-            for (workerId = 1; workerId < workers_total; workerId++) {
-                MPI_Send(&stopWorker, 1, MPI_INT, workerId, STOP_CONDITION_TAG, MPI_COMM_WORLD); 
-            }
-
-            printf("[MESTRE] - processado %d de %d\n", currentRowToProcess, SIZE);
+            MPI_Send(&stopWorker, 1, MPI_INT, workerId, STOP_CONDITION_TAG, MPI_COMM_WORLD); 
         }
 
         printf("[MESTRE] - encerrando\n");
@@ -190,7 +185,7 @@ main(int argc, char **argv)
             MPI_Recv(&stopWorker, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             if (stopWorker) {
                 printf("[ESCRAVO-%d] - informado de que deve encerrar\n", my_rank);
-                break;
+                MPI_Abort(MPI_COMM_WORLD);
             }
         }
         
