@@ -158,13 +158,6 @@ main(int argc, char **argv)
         // main loop: requests batches from the master no more data is returned
         int stopWorker = 0;
         while(!stopWorker) {
-            // check if the worker should stop
-            MPI_Recv(&stopWorker, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            if (stopWorker) {
-                printf("[ESCRAVO-%d] - informado de que deve encerrar\n", my_rank);
-                break;
-            }
-
             // requests batch from the master
             printf("[ESCRAVO-%d] - requisitando batch\n", my_rank);
             MPI_Send(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD);
@@ -192,6 +185,13 @@ main(int argc, char **argv)
 
             // sends results back to the master
             MPI_Send(&partialResult, workerCapacity*SIZE, MPI_INT, 0, PARTIAL_RESULT_TAG, MPI_COMM_WORLD); 
+
+            // check if the worker should stop
+            MPI_Recv(&stopWorker, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            if (stopWorker) {
+                printf("[ESCRAVO-%d] - informado de que deve encerrar\n", my_rank);
+                break;
+            }
         }
         
         printf("[ESCRAVO-%d] - encerrando\n", my_rank);
