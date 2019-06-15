@@ -31,7 +31,8 @@ main(int argc, char **argv)
     int const REQUEST_BATCH_TAG = 2;
     int const RESPONSE_BATCH_TAG = 3;
     int const FINISH_TAG = 4;
-    int const STOP_CONDITION_TAG = 5;
+    int const PARTIAL_RESULT_TAG = 5;
+    int const STOP_CONDITION_TAG = 6;
 
     // MPI initialization
     MPI_Init(&argc, &argv); 
@@ -86,7 +87,7 @@ main(int argc, char **argv)
         }
 
         int currentRowToProcess = 0;
-        while(currentRowToProcess < SIZE) {
+        while(1) {
             // worker request for batch
             int batchSize;
             MPI_Recv(&batchSize, 1, MPI_INT, MPI_ANY_SOURCE, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &status);
@@ -99,28 +100,22 @@ main(int argc, char **argv)
                     batchToProcess[row][column] = m1[row + currentRowToProcess][column];
                 }
             }
-
+            
             // send batch to worker
             MPI_Send(&batchToProcess, batchSize*SIZE, MPI_INT, status.MPI_SOURCE, RESPONSE_BATCH_TAG, MPI_COMM_WORLD); 
+
+            // receives partial result from worker
+            int partialResult[batchSize][SIZE];
+            MPI_Recv(&partialResult, batchSize*SIZE, MPI_INT, status.MPI_SOURCE, PARTIAL_RESULT_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            printf("[MESTRE] - recebido resultado parcial de escravo[%d]\n", status.MPI_SOURCE);
+            printMatrix(batchSize, SIZE, partialResult);
 
             // update index for next iteration
             currentRowToProcess += batchSize;
             printf("[MESTRE] - processado %d de %d\n", currentRowToProcess, SIZE);
         }
 
-        // https://stackoverflow.com/questions/5433697/terminating-all-processes-with-mpi
         printf("[MESTRE] - encerrando\n");
-        for (workerId = 1; workerId < workers_total; workerId++)
-        {
-            int dummy = 1;
-            MPI_Send(&dummy, 1, MPI_INT, workerId, STOP_CONDITION_TAG, MPI_COMM_WORLD);                
-
-            // int dummy = 1;
-            // MPI_Request request;
-            // int request_batch_completed = 1;
-            // MPI_Isend(&dummy, 1, MPI_INT, workerId, STOP_CONDITION_TAG, MPI_COMM_WORLD, &request);
-            // MPI_Test(&request, &request_batch_completed, MPI_STATUS_IGNORE);
-        }
     }
     else
     {
@@ -145,32 +140,10 @@ main(int argc, char **argv)
         printMatrix(SIZE, SIZE, base_matrix);
 
         // main loop: requests batches from the master no more data is returned
-        // int request_batch_completed = 1;
-        // int response_batch_completed = 1;
         while(1) {
-            // MPI_Request r_request_batch;
-            // MPI_Request r_response_batch;
-
-            int dummy = 0;
-            MPI_Request request;
-            int completed = 1;
-            MPI_Irecv(&dummy, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, &request);
-            MPI_Test(&request, &completed, MPI_STATUS_IGNORE);
-            if (dummy) {
-                printf("[ESCRAVO-%d] - finalizando processamento (RESPONSE_BATCH_TAG)\n", my_rank);
-                break;
-            }
-
             // requests batch from the master
             printf("[ESCRAVO-%d] - requisitando batch\n", my_rank);
             MPI_Send(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD);
-
-            // MPI_Isend(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &r_request_batch);
-            // MPI_Test(&r_request_batch, &request_batch_completed, MPI_STATUS_IGNORE);
-            // if (!request_batch_completed) {
-            //     printf("[ESCRAVO-%d] - finalizando processamento (REQUEST_BATCH_TAG)\n", my_rank);
-            //     break;
-            // }
 
             // receives batch from the master
             int batch_to_process[workerCapacity][SIZE];
@@ -178,15 +151,24 @@ main(int argc, char **argv)
             printf("[ESCRAVO-%d] - recebido batch para processar\n", my_rank);
             printMatrix(workerCapacity, SIZE, batch_to_process);
 
-            // MPI_Irecv(&batch_to_process, workerCapacity*SIZE, MPI_INT, 0, RESPONSE_BATCH_TAG, MPI_COMM_WORLD, &r_response_batch);
-            // MPI_Test(&r_response_batch, &response_batch_completed, MPI_STATUS_IGNORE);
-            // if (!response_batch_completed) {
-            //     printf("[ESCRAVO-%d] - finalizando processamento (RESPONSE_BATCH_TAG)\n", my_rank);
-            //     break;
-            // } else {
-            //     printf("[ESCRAVO-%d] - recebido batch para processar\n", my_rank);
-            //     printMatrix(workerCapacity, SIZE, batch_to_process);
-            // }
+            // multiply partialMatrix with base matrix 'm2'
+            int i, j, k;
+            int partialResult[workerCapacity][SIZE];
+            #pragma omp parallel for private(j, k) num_threads(workerCapacity)
+            for (i = 0; i < workerCapacity; i++)
+            {
+                for (j = 0; j < SIZE; j++)
+                {
+                    partialResult[i][j] = 0;
+                    for (k = 0; k < SIZE; k++)
+                    {
+                        partialResult[i][j] += batch_to_process[i][k] * base_matrix[k][j];
+                    }
+                }
+            }
+
+            // sends results back to the master
+            MPI_Send(&partialResult, workerCapacity*SIZE, MPI_INT, 0, PARTIAL_RESULT_TAG, MPI_COMM_WORLD); 
         }
     }
 
