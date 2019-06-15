@@ -154,7 +154,6 @@ main(int argc, char **argv)
         printf("[ESCRAVO-%d] - recebi a matriz base\n", my_rank);
 
         // main loop: requests batches from the master no more data is returned
-        MPI_Barrier(MPI_COMM_WORLD);
         int stopWorker = 0;
         while(!stopWorker) {
             // requests batch from the master
