@@ -21,8 +21,6 @@ main(int argc, char **argv)
     int workers_total;                          // total amount of workers
     MPI_Status status;                          // communication status
     int base_matrix[SIZE][SIZE];                // base matrix
-    int batch_to_process[workerCapacity][SIZE]; // current batch of rows to process
-    int partialResult[workerCapacity][SIZE];    // current result
 
     // host where the master process is currently running on
     int processor_buffer_length = MPI_MAX_PROCESSOR_NAME;  
@@ -154,6 +152,8 @@ main(int argc, char **argv)
 
         // main loop: requests batches from the master no more data is returned
         int stopWorker = 0;
+        int batch_to_process[workerCapacity][SIZE]; // current batch of rows to process
+        int partialResult[workerCapacity][SIZE];    // current result
         while(!stopWorker) {
             // requests batch from the master
             printf("[ESCRAVO-%d] - requisitando batch\n", my_rank);
