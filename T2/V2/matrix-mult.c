@@ -86,11 +86,15 @@ main(int argc, char **argv)
         }
 
         int currentRowToProcess = 0;
-        while(currentRowToProcess < SIZE) {
+        while(currentRowToProcess <= SIZE) {
             // worker request for batch
             int batchSize;
             MPI_Recv(&batchSize, 1, MPI_INT, MPI_ANY_SOURCE, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &status);
             printf("[MESTRE] - recebi pedido de batch do escravo[%d] que pode processar %d threads\n", status.MPI_SOURCE, batchSize);
+
+            // se tudo já foi processado, envia uma matriz vazia
+            // faz loop em todos os escravos verificando quais já se encerraram
+            // encerra mestre quando todos tiverem encerrado
 
             // extract batch from m1 
             int batchToProcess[batchSize][SIZE];
