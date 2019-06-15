@@ -112,6 +112,14 @@ main(int argc, char **argv)
 
             // update index for next iteration
             currentRowToProcess += batchSize;
+
+            // send stop condition to worker
+            int stopWorker = 0;
+            if (currentRowToProcess < SIZE) {
+                stopWorker = 1;
+            }
+            MPI_Send(&stopWorker, 1, MPI_INT, status.MPI_SOURCE, STOP_CONDITION_TAG, MPI_COMM_WORLD); 
+
             printf("[MESTRE] - processado %d de %d\n", currentRowToProcess, SIZE);
         }
 
@@ -169,6 +177,13 @@ main(int argc, char **argv)
 
             // sends results back to the master
             MPI_Send(&partialResult, workerCapacity*SIZE, MPI_INT, 0, PARTIAL_RESULT_TAG, MPI_COMM_WORLD); 
+
+            // check if the worker should stop
+            int stopWorker = 0;
+            MPI_Recv(&stopWorker, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            if (stopWorker) {
+                printf("[ESCRAVO-%d] - encerrando\n", my_rank);
+            }
         }
     }
 
