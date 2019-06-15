@@ -180,7 +180,7 @@ main(int argc, char **argv)
             int completed = 1;
             MPI_Irecv(&dummy, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, &request);
             MPI_Test(&request, &completed, MPI_STATUS_IGNORE);
-            if (!completed) {
+            if (completed) {
                 printf("[ESCRAVO-%d] - finalizando processamento (RESPONSE_BATCH_TAG)\n", my_rank);
                 break;
             }
