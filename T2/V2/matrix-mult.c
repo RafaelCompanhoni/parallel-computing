@@ -87,7 +87,7 @@ main(int argc, char **argv)
         }
 
         int currentRowToProcess = 0;
-        while(1) {
+        while(currentRowToProcess < SIZE) {
             // worker request for batch
             int batchSize;
             MPI_Recv(&batchSize, 1, MPI_INT, MPI_ANY_SOURCE, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &status);
