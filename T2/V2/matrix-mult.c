@@ -118,13 +118,15 @@ main(int argc, char **argv)
             // update index for next iteration
             currentRowToProcess += batchSize;
 
-            // send stop condition to worker
+            // send stop condition to all workers
             int stopWorker = 0;
             if (currentRowToProcess == SIZE) {
-                printf("[MESTRE] - enviando mensagem de encerramento ao escravo[%d]\n", status.MPI_SOURCE);
+                printf("[MESTRE] - enviando mensagem de encerramento a todos os escravos\n");
                 stopWorker = 1;
             }
-            MPI_Send(&stopWorker, 1, MPI_INT, status.MPI_SOURCE, STOP_CONDITION_TAG, MPI_COMM_WORLD); 
+            for (workerId = 1; workerId < workers_total; workerId++) {
+                MPI_Send(&stopWorker, 1, MPI_INT, workerId, STOP_CONDITION_TAG, MPI_COMM_WORLD); 
+            }
 
             printf("[MESTRE] - processado %d de %d\n", currentRowToProcess, SIZE);
         }
@@ -156,6 +158,13 @@ main(int argc, char **argv)
         // main loop: requests batches from the master no more data is returned
         int stopWorker = 0;
         while(!stopWorker) {
+            // check if the worker should stop
+            MPI_Recv(&stopWorker, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            if (stopWorker) {
+                printf("[ESCRAVO-%d] - informado de que deve encerrar\n", my_rank);
+                break;
+            }
+
             // requests batch from the master
             printf("[ESCRAVO-%d] - requisitando batch\n", my_rank);
             MPI_Send(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD);
@@ -183,12 +192,6 @@ main(int argc, char **argv)
 
             // sends results back to the master
             MPI_Send(&partialResult, workerCapacity*SIZE, MPI_INT, 0, PARTIAL_RESULT_TAG, MPI_COMM_WORLD); 
-
-            // check if the worker should stop
-            MPI_Recv(&stopWorker, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-            // first interrrupted process informs all others to stop
-            MPI_Bcast(&stopWorker, 1, MPI_INT, my_rank, MPI_COMM_WORLD);
         }
         
         printf("[ESCRAVO-%d] - encerrando\n", my_rank);
