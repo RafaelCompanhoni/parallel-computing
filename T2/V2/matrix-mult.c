@@ -88,6 +88,14 @@ main(int argc, char **argv)
 
         int currentRowToProcess = 0;
         while(currentRowToProcess < SIZE) {
+             // send stop condition to worker
+            int stopWorker = 0;
+            if (currentRowToProcess == SIZE) {
+                printf("[MESTRE] - enviando mensagem de encerramento ao escravo[%d]\n", status.MPI_SOURCE);
+                stopWorker = 1;
+            }
+            MPI_Send(&stopWorker, 1, MPI_INT, status.MPI_SOURCE, STOP_CONDITION_TAG, MPI_COMM_WORLD); 
+
             // worker request for batch
             int batchSize;
             MPI_Recv(&batchSize, 1, MPI_INT, MPI_ANY_SOURCE, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &status);
@@ -156,6 +164,12 @@ main(int argc, char **argv)
         // main loop: requests batches from the master no more data is returned
         int stopWorker = 0;
         while(!stopWorker) {
+             // check if the worker should stop
+            MPI_Recv(&stopWorker, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            if (stopWorker) {
+                continue;
+            }
+
             // requests batch from the master
             printf("[ESCRAVO-%d] - requisitando batch\n", my_rank);
             MPI_Send(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD);
