@@ -13,7 +13,7 @@
 
 ################ Change these parameters according to your requisites
 
-#PBS -l nodes=2:ppn=1:cluster-Grad,walltime=00:00:10
+#PBS -l nodes=2:ppn=2:cluster-Grad,walltime=00:00:10
 
 ################ Where:
 ################ nodes = number of nodes requested
@@ -58,7 +58,7 @@ echo ################
 
 ############# Command example, if using MPI
 
-mpirun -np 2 matrix-mult
+mpirun -np 3 matrix-mult
 
 ################
 

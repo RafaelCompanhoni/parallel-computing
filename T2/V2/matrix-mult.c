@@ -184,7 +184,7 @@ main(int argc, char **argv)
             // check if the worker should stop
             MPI_Recv(&stopWorker, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             if (stopWorker) {
-                printf("[ESCRAVO-%d] - informado de que deve encerrar\n", my_rank);
+                printf("[ESCRAVO-%d] - encerrando tudo\n", my_rank);
                 MPI_Abort(MPI_COMM_WORLD, 0);
             }
         }
