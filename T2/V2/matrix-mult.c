@@ -110,7 +110,14 @@ main(int argc, char **argv)
 
         // https://stackoverflow.com/questions/5433697/terminating-all-processes-with-mpi
         printf("[MESTRE] - encerrando\n");
-        MPI_Abort(MPI_COMM_WORLD);
+        for (workerId = 1; workerId < workers_total; workerId++)
+        {
+            int dummy = 1;
+            MPI_Request request;
+            int request_batch_completed = 1;
+            MPI_Isend(&dummy, 1, MPI_INT, workerId, STOP_CONDITION_TAG, MPI_COMM_WORLD, &request);
+            MPI_Test(&request, &request_batch_completed, MPI_STATUS_IGNORE);
+        }
     }
     else
     {
@@ -167,6 +174,16 @@ main(int argc, char **argv)
             //     printf("[ESCRAVO-%d] - recebido batch para processar\n", my_rank);
             //     printMatrix(workerCapacity, SIZE, batch_to_process);
             // }
+
+            int dummy = 1;
+            MPI_Request request;
+            int completed = 1;
+            MPI_Irecv(&dummy, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, &request);
+            MPI_Test(&request, &completed, MPI_STATUS_IGNORE);
+            if (!completed) {
+                printf("[ESCRAVO-%d] - finalizando processamento (RESPONSE_BATCH_TAG)\n", my_rank);
+                break;
+            }
         }
     }
 
