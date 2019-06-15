@@ -108,7 +108,12 @@ main(int argc, char **argv)
             int partialResult[batchSize][SIZE];
             MPI_Recv(&partialResult, batchSize*SIZE, MPI_INT, status.MPI_SOURCE, PARTIAL_RESULT_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             printf("[MESTRE] - recebido resultado parcial de escravo[%d]\n", status.MPI_SOURCE);
-            printMatrix(batchSize, SIZE, partialResult);
+
+            for (row = 0; row < batchSize; row++) {
+                for (column = 0; column < SIZE; column++) {
+                    mres[row + currentRowToProcess][column] = partialResult[row][column];
+                }
+            }
 
             // update index for next iteration
             currentRowToProcess += batchSize;
@@ -125,6 +130,7 @@ main(int argc, char **argv)
         }
 
         printf("[MESTRE] - encerrando\n");
+        printMatrix(batchSize, SIZE, partialResult);
     }
     else
     {
@@ -146,7 +152,6 @@ main(int argc, char **argv)
         // receives the base matrix
         MPI_Recv(&base_matrix, SIZE*SIZE, MPI_INT, 0, BASE_MATRIX_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         printf("[ESCRAVO-%d] - recebi a matriz base\n", my_rank);
-        printMatrix(SIZE, SIZE, base_matrix);
 
         // main loop: requests batches from the master no more data is returned
         int stopWorker = 0;
@@ -159,7 +164,6 @@ main(int argc, char **argv)
             int batch_to_process[workerCapacity][SIZE];
             MPI_Recv(&batch_to_process, workerCapacity*SIZE, MPI_INT, 0, RESPONSE_BATCH_TAG, MPI_COMM_WORLD, &status);
             printf("[ESCRAVO-%d] - recebido batch para processar\n", my_rank);
-            printMatrix(workerCapacity, SIZE, batch_to_process);
 
             // multiply partialMatrix with base matrix 'm2'
             int i, j, k;
