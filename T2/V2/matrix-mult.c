@@ -108,7 +108,9 @@ main(int argc, char **argv)
             printf("[MESTRE] - processado %d de %d\n", currentRowToProcess, SIZE);
         }
 
+        // https://stackoverflow.com/questions/5433697/terminating-all-processes-with-mpi
         printf("[MESTRE] - encerrando\n");
+        MPI_Abort(MPI_COMM_WORLD);
     }
     else
     {
