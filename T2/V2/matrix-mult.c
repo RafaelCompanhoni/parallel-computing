@@ -130,7 +130,7 @@ main(int argc, char **argv)
         }
 
         printf("[MESTRE] - encerrando\n");
-        printMatrix(batchSize, SIZE, partialResult);
+        printMatrix(SIZE, SIZE, mres);
     }
     else
     {
