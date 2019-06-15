@@ -123,7 +123,7 @@ main(int argc, char **argv)
                 printf("[MESTRE] - enviando mensagem de encerramento ao escravo[%d]\n", status.MPI_SOURCE);
                 stopWorker = 1;
             }
-            MPI_Send(&stopWorker, 1, MPI_INT, workerId, STOP_CONDITION_TAG, MPI_COMM_WORLD); 
+            MPI_Send(&stopWorker, 1, MPI_INT, status.MPI_SOURCE, STOP_CONDITION_TAG, MPI_COMM_WORLD); 
         }
 
         printf("[MESTRE] - encerrando\n");
