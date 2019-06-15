@@ -148,12 +148,12 @@ main(int argc, char **argv)
             // MPI_Request r_request_batch;
             // MPI_Request r_response_batch;
 
-            int dummy = 1;
+            int dummy = 0;
             MPI_Request request;
             int completed = 1;
             MPI_Irecv(&dummy, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, &request);
             MPI_Test(&request, &completed, MPI_STATUS_IGNORE);
-            if (completed) {
+            if (dummy) {
                 printf("[ESCRAVO-%d] - finalizando processamento (RESPONSE_BATCH_TAG)\n", my_rank);
                 break;
             }
