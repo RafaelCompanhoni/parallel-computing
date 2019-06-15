@@ -186,6 +186,9 @@ main(int argc, char **argv)
 
             // check if the worker should stop
             MPI_Recv(&stopWorker, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+            // first interrrupted process informs all others to stop
+            MPI_Bcast(&stopWorker, 1, MPI_INT, my_rank, MPI_COMM_WORLD);
         }
         
         printf("[ESCRAVO-%d] - encerrando\n", my_rank);
