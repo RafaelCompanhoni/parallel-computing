@@ -17,10 +17,12 @@ void printMatrix(int rows, int columns, int matrix[rows][columns])
 
 main(int argc, char **argv)
 {
-    int my_rank;                        // process identifier
-    int workers_total;                  // total amount of workers
-    int base_matrix[SIZE][SIZE];        // base matrix
-    MPI_Status status;                  // communication status
+    int my_rank;                                // process identifier
+    int workers_total;                          // total amount of workers
+    MPI_Status status;                          // communication status
+    int base_matrix[SIZE][SIZE];                // base matrix
+    int batch_to_process[workerCapacity][SIZE]; // current batch of rows to process
+    int partialResult[workerCapacity][SIZE];    // current result
 
     // host where the master process is currently running on
     int processor_buffer_length = MPI_MAX_PROCESSOR_NAME;  
@@ -158,13 +160,11 @@ main(int argc, char **argv)
             MPI_Send(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD);
 
             // receives batch from the master
-            int batch_to_process[workerCapacity][SIZE];
             MPI_Recv(&batch_to_process, workerCapacity*SIZE, MPI_INT, 0, RESPONSE_BATCH_TAG, MPI_COMM_WORLD, &status);
             printf("[ESCRAVO-%d] - recebido batch para processar\n", my_rank);
 
             // multiply partialMatrix with base matrix 'm2'
             int i, j, k;
-            int partialResult[workerCapacity][SIZE];
             #pragma omp parallel for private(j, k) num_threads(workerCapacity)
             for (i = 0; i < workerCapacity; i++)
             {
