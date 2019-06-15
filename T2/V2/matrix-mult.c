@@ -115,7 +115,7 @@ main(int argc, char **argv)
 
             // send stop condition to worker
             int stopWorker = 0;
-            if (currentRowToProcess < SIZE) {
+            if (currentRowToProcess == SIZE) {
                 printf("[MESTRE] - enviando mensagem de encerramento ao escravo[%d]\n", status.MPI_SOURCE);
                 stopWorker = 1;
             }
