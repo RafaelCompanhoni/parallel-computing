@@ -86,7 +86,7 @@ main(int argc, char **argv)
         }
 
         int currentRowToProcess = 0;
-        while(currentRowToProcess < SIZE) {
+        do {
             // sends the stop condition for the workers
             for (workerId = 1; workerId < workers_total; workerId++)
             {
@@ -118,7 +118,7 @@ main(int argc, char **argv)
             // update index for next iteration
             currentRowToProcess += batchSize;
             printf("[MESTRE] - processado %d de %d\n", currentRowToProcess, SIZE);
-        }
+        } while (currentRowToProcess < SIZE);
 
         printf("[MESTRE] - encerrando\n");
     }
