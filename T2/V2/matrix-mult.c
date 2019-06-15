@@ -108,17 +108,6 @@ main(int argc, char **argv)
             printf("[MESTRE] - processado %d de %d\n", currentRowToProcess, SIZE);
         }
 
-        // sends the stop condition for the workers
-        for (workerId = 1; workerId < workers_total; workerId++)
-        {
-            int doWork = 1;
-            if (currentRowToProcess == SIZE) {
-                printf("[MESTRE] - enviando mensagem para encerrar escravos\n");
-                doWork = 0;
-            }
-            MPI_Send(&doWork, 1, MPI_INT, workerId, STOP_CONDITION_TAG, MPI_COMM_WORLD); 
-            break;
-        }
         printf("[MESTRE] - encerrando\n");
     }
     else
@@ -150,13 +139,6 @@ main(int argc, char **argv)
         while(doWork) {
             // MPI_Request r_request_batch;
             // MPI_Request r_response_batch;
-
-            // checks the stop condition
-            MPI_Recv(&doWork, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            if (!doWork) {
-                printf("[ESCRAVO-%d] - encerrando\n", my_rank);
-                break;    
-            }
 
             // requests batch from the master
             printf("[ESCRAVO-%d] - requisitando batch\n", my_rank);
