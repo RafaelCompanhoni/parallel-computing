@@ -163,7 +163,7 @@ main(int argc, char **argv)
             // receives batch from the master
             MPI_Recv(&batch_to_process, workerCapacity*SIZE, MPI_INT, 0, RESPONSE_BATCH_TAG, MPI_COMM_WORLD, &status);
             printf("[ESCRAVO-%d] - recebido batch para processar\n", my_rank);
-            printMatrix(workerCapacity, SIZE, &batch_to_process);
+            printMatrix(workerCapacity, SIZE, batch_to_process);
 
             // multiply partialMatrix with base matrix 'm2'
             int i, j, k;
@@ -182,7 +182,7 @@ main(int argc, char **argv)
 
             // sends results back to the master
             printf("[ESCRAVO-%d] - enviando resultados parciais\n", my_rank);
-            printMatrix(workerCapacity, SIZE, &partialResult);
+            printMatrix(workerCapacity, SIZE, partialResult);
             MPI_Send(&partialResult, workerCapacity*SIZE, MPI_INT, 0, PARTIAL_RESULT_TAG, MPI_COMM_WORLD); 
 
             // check if the worker should stop
