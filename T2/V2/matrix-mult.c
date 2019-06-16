@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "mpi.h"
 
 void printMatrix(int rows, int columns, int matrix[rows][columns])
