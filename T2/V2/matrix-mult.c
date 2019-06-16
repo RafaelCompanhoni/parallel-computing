@@ -189,6 +189,9 @@ main(int argc, char **argv)
                 printf("[ESCRAVO-%d] - encerrando tudo\n", my_rank);
                 MPI_Abort(MPI_COMM_WORLD, 0);
             }
+
+            free(partialResult);
+            free(batch_to_process);
         }
         
         printf("[ESCRAVO-%d] - encerrando\n", my_rank);
