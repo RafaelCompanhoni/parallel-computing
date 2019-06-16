@@ -58,7 +58,7 @@ echo ################
 
 ############# Command example, if using MPI
 
-mpirun --bynode -np 3 matrix-mult
+mpirun --bynode -np 3 final
 
 ################
 
