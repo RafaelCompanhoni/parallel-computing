@@ -136,7 +136,7 @@ main(int argc, char **argv)
     else
     {
         /**************** WORKER ****************/
-        printf("[ESCRAVO-%d] - mestre executado no host %s\n", my_rank, masterHostname);
+        // printf("[ESCRAVO-%d] - mestre executado no host %s\n", my_rank, masterHostname);
 
         // gets the worker hostname
         char workerHostname[processor_buffer_length];
@@ -148,7 +148,7 @@ main(int argc, char **argv)
         if(strcmp(workerHostname, masterHostname) == 0) {
             workerCapacity = 1;
         }
-        // printf("[ESCRAVO-%d] - posso processar %d threads\n", my_rank, workerCapacity);
+        printf("[ESCRAVO-%d] - host %s -- capacidade: %d threads\n", my_rank, workerHostname, workerCapacity);
 
         // receives the base matrix
         MPI_Recv(&base_matrix, SIZE*SIZE, MPI_INT, 0, BASE_MATRIX_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
