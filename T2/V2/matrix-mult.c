@@ -149,7 +149,7 @@ main(int argc, char **argv)
         if(strcmp(workerHostname, masterHostname) == 0) {
             threadCapacity = 15;
         }
-        printf("[ESCRAVO-%d] - host %s -- capacidade: %d threads\n", my_rank, workerHostname, workerCapacity);
+        printf("[ESCRAVO-%d] - host %s -- capacidade: %d threads\n", my_rank, workerHostname, threadCapacity);
 
         // receives the base matrix
         MPI_Recv(&base_matrix, SIZE*SIZE, MPI_INT, 0, BASE_MATRIX_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
