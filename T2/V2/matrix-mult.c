@@ -125,8 +125,11 @@ main(int argc, char **argv)
             int stopWorker = 0;
             if (currentRowToProcess == SIZE) {
                 // printf("[MESTRE] - enviando mensagem de encerramento ao escravo[%d]\n", status.MPI_SOURCE);
+                printf("TIME ELAPSED: %lf", elapsed_time);
                 stopWorker = 1;
             }
+            
+            elapsed_time += MPI_Wtime();
             MPI_Send(&stopWorker, 1, MPI_INT, status.MPI_SOURCE, STOP_CONDITION_TAG, MPI_COMM_WORLD); 
         }
 
@@ -189,8 +192,6 @@ main(int argc, char **argv)
             MPI_Recv(&stopWorker, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             if (stopWorker) {
                 printf("[ESCRAVO-%d] - encerrando tudo\n", my_rank);
-                elapsed_time += MPI_Wtime();
-                printf("%lf", elapsed_time);
                 MPI_Abort(MPI_COMM_WORLD, 0);
             }
         }
