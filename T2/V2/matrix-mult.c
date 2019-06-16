@@ -97,6 +97,7 @@ main(int argc, char **argv)
             // printf("[MESTRE] - recebi pedido de batch do escravo[%d] que pode processar %d threads\n", status.MPI_SOURCE, batchSize);
 
             if (batchSize > SIZE - currentRowToProcess) {
+                printf("[MESTRE] - truncando de %d para %d", batchSize,  SIZE - currentRowToProcess);
                 batchSize = SIZE - currentRowToProcess;
             }
 
