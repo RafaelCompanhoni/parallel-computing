@@ -21,7 +21,6 @@ main(int argc, char **argv)
     int workers_total;                          // total amount of workers
     MPI_Status status;                          // communication status
     int base_matrix[SIZE][SIZE];                // base matrix
-    double elapsed_time;
 
     // host where the master process is currently running on
     int processor_buffer_length = MPI_MAX_PROCESSOR_NAME;  
@@ -47,7 +46,7 @@ main(int argc, char **argv)
     MPI_Bcast(&masterHostname, processor_buffer_length, MPI_CHAR, 0, MPI_COMM_WORLD);
     
     // measurement
-    elapsed_time = -MPI_Wtime();
+    double start = MPI_Wtime();
 
     if (my_rank == 0)
     {
@@ -125,11 +124,9 @@ main(int argc, char **argv)
             int stopWorker = 0;
             if (currentRowToProcess == SIZE) {
                 // printf("[MESTRE] - enviando mensagem de encerramento ao escravo[%d]\n", status.MPI_SOURCE);
-                printf("TIME ELAPSED: %lf", elapsed_time);
                 stopWorker = 1;
             }
             
-            elapsed_time += MPI_Wtime();
             MPI_Send(&stopWorker, 1, MPI_INT, status.MPI_SOURCE, STOP_CONDITION_TAG, MPI_COMM_WORLD); 
         }
 
@@ -191,7 +188,8 @@ main(int argc, char **argv)
             // check if the worker should stop
             MPI_Recv(&stopWorker, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             if (stopWorker) {
-                printf("[ESCRAVO-%d] - encerrando tudo\n", my_rank);
+                double end = MPI_Wtime();
+                printf("[ESCRAVO-%d] - encerrando tudo -- tempo: %lf\n", my_rank, (end - start));
                 MPI_Abort(MPI_COMM_WORLD, 0);
             }
         }
