@@ -141,9 +141,9 @@ main(int argc, char **argv)
         printf("[ESCRAVO-%d] - eu estou no host %s\n", my_rank, workerHostname);
 
         // determines how many threads it can process by comparing its own hostname with the master's
-        int workerCapacity = 16;
+        int workerCapacity = 2;
         if(strcmp(workerHostname, masterHostname) == 0) {
-            workerCapacity = 15;
+            workerCapacity = 1;
         }
         printf("[ESCRAVO-%d] - posso processar %d threads\n", my_rank, workerCapacity);
 
