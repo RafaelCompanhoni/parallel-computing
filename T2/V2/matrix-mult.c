@@ -96,11 +96,6 @@ main(int argc, char **argv)
             MPI_Recv(&batchSize, 1, MPI_INT, MPI_ANY_SOURCE, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &status);
             // printf("[MESTRE] - recebi pedido de batch do escravo[%d] que pode processar %d threads\n", status.MPI_SOURCE, batchSize);
 
-            if (batchSize > SIZE - currentRowToProcess) {
-                printf("[MESTRE] - truncando de %d para %d", batchSize,  SIZE - currentRowToProcess);
-                batchSize = SIZE - currentRowToProcess;
-            }
-
             // extract batch from m1 
             int batchToProcess[batchSize][SIZE];
             for (row = 0; row < batchSize; row++) {
@@ -149,9 +144,10 @@ main(int argc, char **argv)
         // printf("[ESCRAVO-%d] - eu estou no host %s\n", my_rank, workerHostname);
 
         // determines how many threads it can process by comparing its own hostname with the master's
-        int workerCapacity = 16;
+        int workerCapacity = 10;
+        int threadCapacity = 16;
         if(strcmp(workerHostname, masterHostname) == 0) {
-            workerCapacity = 15;
+            threadCapacity = 15;
         }
         printf("[ESCRAVO-%d] - host %s -- capacidade: %d threads\n", my_rank, workerHostname, workerCapacity);
 
@@ -174,7 +170,7 @@ main(int argc, char **argv)
 
             // multiply partialMatrix with base matrix 'm2'
             int i, j, k;
-            #pragma omp parallel for private(j, k) num_threads(workerCapacity)
+            #pragma omp parallel for private(j, k) num_threads(threadCapacity)
             for (i = 0; i < workerCapacity; i++)
             {
                 for (j = 0; j < SIZE; j++)
