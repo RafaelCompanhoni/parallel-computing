@@ -153,10 +153,8 @@ main(int argc, char **argv)
 
         // main loop: requests batches from the master no more data is returned
         int stopWorker = 0;
-        int *batch_to_process = (int*)malloc(workerCapacity * SIZE * sizeof(int));
-        int *partialResult = (int*)malloc(workerCapacity * SIZE * sizeof(int));
-        // int batch_to_process[workerCapacity][SIZE]; // current batch of rows to process
-        // int partialResult[workerCapacity][SIZE];    // current result
+        int batch_to_process[workerCapacity][SIZE]; // current batch of rows to process
+        int partialResult[workerCapacity][SIZE];    // current result
         while(!stopWorker) {
             // requests batch from the master
             printf("[ESCRAVO-%d] - requisitando batch\n", my_rank);
@@ -177,7 +175,7 @@ main(int argc, char **argv)
                     partialResult[i * SIZE + j] = 0;
                     for (k = 0; k < SIZE; k++)
                     {
-                        partialResult[i * SIZE + j] += batch_to_process[i * SIZE + k] * base_matrix[k][j];
+                        partialResult[i][j] += batch_to_process[i][k] * base_matrix[k][j];
                     }
                 }
             }
