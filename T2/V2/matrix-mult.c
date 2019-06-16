@@ -132,6 +132,7 @@ main(int argc, char **argv)
         
         double end = MPI_Wtime();
         printf("[MESTRE] - encerrando. Tempo: %lf\n", (end-start));
+        printMatrix(SIZE, SIZE, mres);
     }
     else
     {
