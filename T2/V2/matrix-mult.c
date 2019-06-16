@@ -130,7 +130,7 @@ main(int argc, char **argv)
             MPI_Send(&stopWorker, 1, MPI_INT, status.MPI_SOURCE, STOP_CONDITION_TAG, MPI_COMM_WORLD); 
         }
 
-        printf("[MESTRE] - encerrando\n");
+        printf("[MESTRE] - encerrando. Tempo: %lf\n", (end-start));
     }
     else
     {
@@ -189,7 +189,7 @@ main(int argc, char **argv)
             MPI_Recv(&stopWorker, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             if (stopWorker) {
                 double end = MPI_Wtime();
-                printf("[ESCRAVO-%d] - encerrando tudo -- tempo: %lf\n", my_rank, (end - start));
+                printf("[ESCRAVO-%d] - encerrando tudo\n", my_rank);
                 MPI_Abort(MPI_COMM_WORLD, 0);
             }
         }
