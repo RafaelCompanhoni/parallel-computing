@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "mpi.h"
+#include <omp.h>
 
 void printMatrix(int rows, int columns, int matrix[rows][columns])
 {
@@ -30,9 +31,8 @@ main(int argc, char **argv)
     int const BASE_MATRIX_TAG = 1;
     int const REQUEST_BATCH_TAG = 2;
     int const RESPONSE_BATCH_TAG = 3;
-    int const FINISH_TAG = 4;
-    int const PARTIAL_RESULT_TAG = 5;
-    int const STOP_CONDITION_TAG = 6;
+    int const PARTIAL_RESULT_TAG = 4;
+    int const STOP_CONDITION_TAG = 5;
 
     // MPI initialization
     MPI_Init(&argc, &argv); 
