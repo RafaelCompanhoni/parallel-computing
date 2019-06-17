@@ -13,7 +13,7 @@
 
 ################ Change these parameters according to your requisites
 
-#PBS -l nodes=1:ppn=16:cluster-Grad,walltime=00:00:30
+#PBS -l nodes=2:ppn=16:cluster-Grad,walltime=00:00:30
 
 ################ Where:
 ################ nodes = number of nodes requested
@@ -59,10 +59,10 @@ echo ################
 ############# Command example, if using MPI
 
 # CENÁRIO 1
-mpirun --bynode -np 2 final
+# mpirun --bynode -np 2 final
 
 # CENÁRIO 2
-#mpirun --bynode -np 3 final
+mpirun --bynode -np 3 final
 
 # CENÁRIO 3
 #mpirun --bynode -np 4 final
