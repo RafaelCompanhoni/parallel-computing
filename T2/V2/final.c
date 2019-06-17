@@ -169,7 +169,8 @@ main(int argc, char **argv)
         
         double end = MPI_Wtime();
         printf("[MESTRE] - encerrando. Tempo: %lf\n", (end-start));
-        if (checkResult(mres)) {
+        int correctResult = checkResult(mres);
+        if (correctResult) {
             printf("[MESTRE] - resultado correto!\n");
         } else {
             printf("[MESTRE] - resultado INcorreto!\n");
