@@ -127,7 +127,7 @@ main(int argc, char **argv)
         }
         
         double end = MPI_Wtime();
-        printf("[MESTRE] - encerrando. Tempo: %lf\n", (end-start));
+        printf("[MESTRE] - encerrando processamento %d X %d. Tempo: %lf\n", (end-start), SIZE, SIZE);
     }
     else
     {
