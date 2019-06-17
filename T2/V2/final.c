@@ -16,7 +16,7 @@ void printMatrix(int rows, int columns, int matrix[rows][columns])
     }
 }
 
-void checkResult(mres) {
+void checkResult(int mres[SIZE][SIZE]) {
     int i, j, k;
 
     for (i = 0; i < SIZE; i++)
