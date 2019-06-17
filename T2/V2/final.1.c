@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "mpi.h"
-#include <stdlib.h>
 #include <omp.h>
 
 void printMatrix(int rows, int columns, int matrix[rows][columns])
@@ -15,6 +14,33 @@ void printMatrix(int rows, int columns, int matrix[rows][columns])
         }
         printf("\n");
     }
+}
+
+int** create2DArray(unsigned nrows, unsigned ncols)
+{
+   unsigned i;
+   int** ptr = malloc(nrows * sizeof(int*));  // allocate pointers to rows
+   if ( ptr != NULL )
+   { 
+       int* pool = malloc(nrows * ncols * sizeof(int)); // allocate pool of memory
+       if ( pool != NULL )
+       {
+           for (i = 0; i < nrows; ++i, pool += ncols )
+               ptr[i] = pool;  // point the row pointers into the pool
+       }
+       else
+       { 
+          free(ptr);  
+          ptr = NULL;
+       }
+   }
+   return ptr;
+}
+
+void delete2DArray(int** arr)
+{
+   free(arr[0]);  // remove the pool
+   free(arr);     // remove the pointers
 }
 
 main(int argc, char **argv)
@@ -97,23 +123,22 @@ main(int argc, char **argv)
             MPI_Recv(&batchSize, 1, MPI_INT, MPI_ANY_SOURCE, REQUEST_BATCH_TAG, MPI_COMM_WORLD, &status);
 
             // extract batch from m1 
-            // int batchToProcess[batchSize][SIZE];
-            int *batchToProcess =(int*)malloc(batchSize * SIZE * sizeof(int));
+            int **batchToProcess = create2DArray(batchSize, SIZE);
             for (row = 0; row < batchSize; row++) {
                 for (column = 0; column < SIZE; column++) {
-                    batchToProcess[row * SIZE + row] = m1[row + currentRowToProcess][column];
+                    batchToProcess[row][column] = m1[row + currentRowToProcess][column];
                 }
             }
             
             // send batch to worker
-            MPI_Send(batchToProcess, batchSize*SIZE, MPI_INT, status.MPI_SOURCE, RESPONSE_BATCH_TAG, MPI_COMM_WORLD); 
+            MPI_Send(&batchToProcess, batchSize*SIZE, MPI_INT, status.MPI_SOURCE, RESPONSE_BATCH_TAG, MPI_COMM_WORLD); 
 
             // receives partial result from worker and updates the final result
-            int *partialResult =(int*)malloc(batchSize * SIZE * sizeof(int));
-            MPI_Recv(partialResult, batchSize*SIZE, MPI_INT, status.MPI_SOURCE, PARTIAL_RESULT_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            int **partialResult = create2DArray(batchSize, SIZE);
+            MPI_Recv(&partialResult, batchSize*SIZE, MPI_INT, status.MPI_SOURCE, PARTIAL_RESULT_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             for (row = 0; row < batchSize; row++) {
                 for (column = 0; column < SIZE; column++) {
-                    mres[row + currentRowToProcess][column] = partialResult[row * SIZE + column];
+                    mres[row + currentRowToProcess][column] = partialResult[row][column];
                 }
             }
 
@@ -127,8 +152,8 @@ main(int argc, char **argv)
             }
             MPI_Send(&stopWorker, 1, MPI_INT, status.MPI_SOURCE, STOP_CONDITION_TAG, MPI_COMM_WORLD); 
 
-            free(batchToProcess);
-            free(partialResult);
+            delete2DArray(batchToProcess);
+            delete2DArray(partialResult);
         }
         
         double end = MPI_Wtime();
@@ -153,16 +178,14 @@ main(int argc, char **argv)
 
         // main loop: requests batches from the master no more data is returned
         int stopWorker = 0;
-        // int batch_to_process[workerCapacity][SIZE]; // current batch of rows to process
-        // int partialResult[workerCapacity][SIZE];    // current result
-        int *batch_to_process =(int*)malloc(workerCapacity * SIZE * sizeof(int));
-        int *partialResult =(int*)malloc(workerCapacity * SIZE * sizeof(int));
+        int **batch_to_process = create2DArray(workerCapacity, SIZE); 
+        int **partialResult = create2DArray(workerCapacity, SIZE); 
         while(!stopWorker) {
             // requests batch from the master
             MPI_Send(&workerCapacity, 1, MPI_INT, 0, REQUEST_BATCH_TAG, MPI_COMM_WORLD);
 
             // receives batch from the master
-            MPI_Recv(batch_to_process, workerCapacity*SIZE, MPI_INT, 0, RESPONSE_BATCH_TAG, MPI_COMM_WORLD, &status);
+            MPI_Recv(&batch_to_process, workerCapacity*SIZE, MPI_INT, 0, RESPONSE_BATCH_TAG, MPI_COMM_WORLD, &status);
 
             // multiply partialMatrix with base matrix 'm2'
             int i, j, k;
@@ -171,16 +194,16 @@ main(int argc, char **argv)
             {
                 for (j = 0; j < SIZE; j++)
                 {
-                    partialResult[i * SIZE + j] = 0;
+                    partialResult[i][j] = 0;
                     for (k = 0; k < SIZE; k++)
                     {
-                        partialResult[i * SIZE + j] +=  batch_to_process[i * SIZE + k] * base_matrix[k][j];
+                        partialResult[i][j] += batch_to_process[i][k] * base_matrix[k][j];
                     }
                 }
             }
 
             // sends results back to the master
-            MPI_Send(partialResult, workerCapacity*SIZE, MPI_INT, 0, PARTIAL_RESULT_TAG, MPI_COMM_WORLD); 
+            MPI_Send(&partialResult, workerCapacity*SIZE, MPI_INT, 0, PARTIAL_RESULT_TAG, MPI_COMM_WORLD); 
 
             // check if the worker should stop
             MPI_Recv(&stopWorker, 1, MPI_INT, 0, STOP_CONDITION_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -189,8 +212,8 @@ main(int argc, char **argv)
                 MPI_Abort(MPI_COMM_WORLD, 0);
             }
 
-            free(batch_to_process);
-            free(partialResult);
+            delete2DArray(batch_to_process);
+            delete2DArray(partialResult);
         }
     }
 
