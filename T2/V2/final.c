@@ -16,6 +16,47 @@ void printMatrix(int rows, int columns, int matrix[rows][columns])
     }
 }
 
+void checkResult(mres) {
+    int i, j, k;
+
+    for (i = 0; i < SIZE; i++)
+    {
+        k = SIZE * (i + 1);
+        for (j = 0; j < SIZE; j++)
+        {
+            int k_col = k * (j + 1);
+            if (i % 2 == 0)
+            {
+                if (j % 2 == 0)
+                {
+                    if (mres[i][j] != k_col)
+                        return 1;
+                }
+                else
+                {
+                    if (mres[i][j] != -k_col)
+                        return 1;
+                }
+            }
+            else
+            {
+                if (j % 2 == 0)
+                {
+                    if (mres[i][j] != -k_col)
+                        return 1;
+                }
+                else
+                {
+                    if (mres[i][j] != k_col)
+                        return 1;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
 main(int argc, char **argv)
 {
     int my_rank;                                // process identifier
@@ -128,6 +169,11 @@ main(int argc, char **argv)
         
         double end = MPI_Wtime();
         printf("[MESTRE] - encerrando. Tempo: %lf\n", (end-start));
+        if (checkResult(mres)) {
+            printf("[MESTRE] - resultado correto! %lf\n", (end-start));
+        } else {
+            printf("[MESTRE] - resultado INcorreto! %lf\n", (end-start));
+        }
     }
     else
     {
