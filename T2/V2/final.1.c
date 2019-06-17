@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "mpi.h"
+#include <stdlib.h>
 #include <omp.h>
 
 void printMatrix(int rows, int columns, int matrix[rows][columns])
@@ -170,7 +171,7 @@ main(int argc, char **argv)
             {
                 for (j = 0; j < SIZE; j++)
                 {
-                    partialResult[i][j] = 0;
+                    partialResult[i * SIZE + j] = 0;
                     for (k = 0; k < SIZE; k++)
                     {
                         partialResult[i * SIZE + j] +=  batch_to_process[i * SIZE + k] * base_matrix[k][j];
