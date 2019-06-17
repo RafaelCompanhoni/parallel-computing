@@ -97,7 +97,7 @@ main(int argc, char **argv)
 
             // extract batch from m1 
             // int batchToProcess[batchSize][SIZE];
-            int *batch_to_process =(int*)malloc(batchSize * SIZE * sizeof(int));
+            int *batchToProcess =(int*)malloc(batchSize * SIZE * sizeof(int));
             for (row = 0; row < batchSize; row++) {
                 for (column = 0; column < SIZE; column++) {
                     batchToProcess[row * SIZE + row] = m1[row + currentRowToProcess][column];
@@ -126,7 +126,7 @@ main(int argc, char **argv)
             }
             MPI_Send(&stopWorker, 1, MPI_INT, status.MPI_SOURCE, STOP_CONDITION_TAG, MPI_COMM_WORLD); 
 
-            free(batch_to_process);
+            free(batchToProcess);
             free(partialResult);
         }
         
