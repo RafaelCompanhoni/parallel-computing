@@ -16,47 +16,6 @@ void printMatrix(int rows, int columns, int matrix[rows][columns])
     }
 }
 
-int checkResult(int mres[SIZE][SIZE]) {
-    int i, j, k;
-
-    for (i = 0; i < SIZE; i++)
-    {
-        k = SIZE * (i + 1);
-        for (j = 0; j < SIZE; j++)
-        {
-            int k_col = k * (j + 1);
-            if (i % 2 == 0)
-            {
-                if (j % 2 == 0)
-                {
-                    if (mres[i][j] != k_col)
-                        return 1;
-                }
-                else
-                {
-                    if (mres[i][j] != -k_col)
-                        return 1;
-                }
-            }
-            else
-            {
-                if (j % 2 == 0)
-                {
-                    if (mres[i][j] != -k_col)
-                        return 1;
-                }
-                else
-                {
-                    if (mres[i][j] != k_col)
-                        return 1;
-                }
-            }
-        }
-    }
-
-    return 0;
-}
-
 main(int argc, char **argv)
 {
     int my_rank;                                // process identifier
@@ -124,12 +83,6 @@ main(int argc, char **argv)
             value++;
         }
 
-        printf("[MESTRE] - Matriz M1\n");
-        printMatrix(SIZE, SIZE, m1);
-
-        printf("[MESTRE] - Matriz BASE\n");
-        printMatrix(SIZE, SIZE, base_matrix);
-
         // sends the base matrix to all workers
         for (workerId = 1; workerId < workers_total; workerId++)
         {
@@ -175,13 +128,6 @@ main(int argc, char **argv)
         
         double end = MPI_Wtime();
         printf("[MESTRE] - encerrando. Tempo: %lf\n", (end-start));
-        int correctResult = checkResult(mres);
-        if (correctResult) {
-            printf("[MESTRE] - resultado correto!\n");
-        } else {
-            printf("[MESTRE] - resultado INcorreto!\n");
-        }
-        printMatrix(SIZE, SIZE, mres);
     }
     else
     {
