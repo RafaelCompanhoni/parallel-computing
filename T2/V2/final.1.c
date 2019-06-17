@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "mpi.h"
 #include <omp.h>
+#include <stdlib.h>
 
 void printMatrix(int rows, int columns, int matrix[rows][columns])
 {
