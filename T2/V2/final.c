@@ -137,9 +137,9 @@ main(int argc, char **argv)
         // gets the worker hostname and determines how many threads it can process by comparing its own hostname with the master's
         char workerHostname[processor_buffer_length];
         MPI_Get_processor_name(workerHostname, &processor_buffer_length);
-        int threadCapacity = 10;
+        int threadCapacity = 16;
         if(strcmp(workerHostname, masterHostname) == 0) {
-            threadCapacity = 10;
+            threadCapacity = 15;
         }
         printf("[ESCRAVO-%d] - host %s -- capacidade: %d threads\n", my_rank, workerHostname, threadCapacity);
 
