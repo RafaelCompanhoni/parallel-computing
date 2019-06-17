@@ -170,10 +170,11 @@ main(int argc, char **argv)
         double end = MPI_Wtime();
         printf("[MESTRE] - encerrando. Tempo: %lf\n", (end-start));
         if (checkResult(mres)) {
-            printf("[MESTRE] - resultado correto! %lf\n", (end-start));
+            printf("[MESTRE] - resultado correto!\n");
         } else {
-            printf("[MESTRE] - resultado INcorreto! %lf\n", (end-start));
+            printf("[MESTRE] - resultado INcorreto!\n");
         }
+        printMatrix(SIZE, SIZE, mres);
     }
     else
     {
