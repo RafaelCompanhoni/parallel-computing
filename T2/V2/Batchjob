@@ -58,7 +58,7 @@ echo ################
 
 ############# Command example, if using MPI
 
-mpirun --bynode -np 4 final1
+mpirun --bynode -np 4 final
 
 ################
 
