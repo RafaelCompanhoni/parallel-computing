@@ -132,7 +132,7 @@ main(int argc, char **argv)
     else
     {
         /**************** WORKER ****************/
-        int workerCapacity = 1;
+        int workerCapacity = 10;
 
         // gets the worker hostname and determines how many threads it can process by comparing its own hostname with the master's
         char workerHostname[processor_buffer_length];
