@@ -16,7 +16,7 @@ void printMatrix(int rows, int columns, int matrix[rows][columns])
     }
 }
 
-int checkResult(int mres[SIZE][SIZE]) {
+int isResultIncorrect(int mres[SIZE][SIZE]) {
     int i, j, k;
 
     for (i = 0; i < SIZE; i++)
@@ -123,6 +123,12 @@ main(int argc, char **argv)
             }
             value++;
         }
+
+        printf("[MESTRE] - Matriz M1\n");
+        printMatrix(SIZE, SIZE, m1);
+
+        printf("[MESTRE] - Matriz BASE\n");
+        printMatrix(SIZE, SIZE, base_matrix);
 
         // sends the base matrix to all workers
         for (workerId = 1; workerId < workers_total; workerId++)
